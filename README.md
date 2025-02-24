@@ -29,4 +29,4 @@ A documentação completa da API está disponível através do Swagger UI após 
 W.I.P. 💻
 
 ---
-Desenvolvido por @3runoAM ☕
+Desenvolvido por Bruno Martins (@3runoAM) ☕
