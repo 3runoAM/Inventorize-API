@@ -23,7 +23,8 @@ public class InventoryItem {
     private UUID id;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @NotNull
