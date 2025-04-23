@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventorize_db
+    driver-class-name: org.postgresql.Driver
+    username: seu_usuario
+    password: sua_senha
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
