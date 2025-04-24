@@ -1,35 +1,31 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.entities.Product;
-import edu.infnet.InventorizeAPI.repositories.map.ProductMapRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductService {
-    private final ProductMapRepository productMapRepository;
+    private final Map<UUID, Product> productMap;
 
-    public ProductService(ProductMapRepository productMapRepository) {
-        this.productMapRepository = productMapRepository;
+    public ProductService() {
+        this.productMap = new HashMap<>();
     }
 
-    public void processProductData(String[] data) {
-        Product product = Product.builder()
+    public Product processProductData(String[] data) {
+        return Product.builder()
                 .id(UUID.fromString(data[0]))
                 .name(data[1])
                 .supplierCode(data[2])
                 .build();
-
-        productMapRepository.save(product);
     }
 
     public void saveProduct(Product product) {
-        productMapRepository.save(product);
+        productMap.put(product.getId(), product);
     }
 
     public List<Product> getAllProducts() {
-        return productMapRepository.findAll();
+        return new ArrayList<>(productMap.values());
     }
 }

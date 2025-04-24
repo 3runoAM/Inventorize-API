@@ -11,7 +11,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Builder
-@ToString
+@ToString(exclude = {"product", "inventory"})
 @AllArgsConstructor
 @NoArgsConstructor
 public class InventoryItem {
