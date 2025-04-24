@@ -4,18 +4,16 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Builder
 @Getter
+@Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Inventory {
