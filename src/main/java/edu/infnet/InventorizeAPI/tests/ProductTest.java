@@ -15,7 +15,7 @@ public class ProductTest implements ApplicationRunner {
     private final ProductService productService;
 
     public ProductTest(ProductService productService) {
-        this.productService = productService;;
+        this.productService = productService;
     }
 
     @Override
