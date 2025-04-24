@@ -26,7 +26,5 @@ public class ProductLoader {
                 productService.processProductData(data);
             }
         );
-
-        productService.getAllProducts().forEach(System.out::println);
     }
 }
