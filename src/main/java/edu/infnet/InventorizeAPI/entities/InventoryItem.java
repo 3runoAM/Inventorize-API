@@ -3,17 +3,15 @@ package edu.infnet.InventorizeAPI.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Entity
-@Builder
 @Getter
+@Builder
+@ToString(exclude = {"product", "inventory"})
 @AllArgsConstructor
 @NoArgsConstructor
 public class InventoryItem {
@@ -23,7 +21,8 @@ public class InventoryItem {
     private UUID id;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @NotNull
