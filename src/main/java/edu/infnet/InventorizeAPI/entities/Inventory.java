@@ -16,7 +16,7 @@ import java.util.UUID;
 @ToString(exclude = "inventoryItems")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Inventory {
+public class Inventory extends AuditableEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)

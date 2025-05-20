@@ -1,10 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
-import edu.infnet.InventorizeAPI.entities.InventoryItem;
 import edu.infnet.InventorizeAPI.repository.InventoryItemRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
 
 @Service
 public class InventoryItemService {
