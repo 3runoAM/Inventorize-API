@@ -46,7 +46,7 @@ public class UserDetailsImpl implements UserDetails {
         return authUser.getEmail();
     }
 
-    **
+    /**
             * Indica se a conta do usuário não está bloqueada.
             *
             * @return true se a conta do usuário não estiver bloqueada
