@@ -3,6 +3,7 @@ package edu.infnet.InventorizeAPI.controllers;
 import edu.infnet.InventorizeAPI.dto.request.AuthenticationRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.AuthenticationResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
+import edu.infnet.InventorizeAPI.exceptions.custom.RegisteredEmailException;
 import edu.infnet.InventorizeAPI.services.UserRegistrationService;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
 import jakarta.validation.Valid;
@@ -42,8 +43,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody @Valid AuthenticationRequestDTO userData) throws IOException {
-        if (userRegistrationService.existsByEmail(userData.email())) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody @Valid AuthenticationRequestDTO userData) {
+        if (userRegistrationService.existsByEmail(userData.email())) throw new RegisteredEmailException("Email já cadastrado");
 
         AuthenticationResponseDTO savedUser = userRegistrationService.registerUser(userData);
 

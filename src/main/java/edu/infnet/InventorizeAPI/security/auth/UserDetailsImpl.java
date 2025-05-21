@@ -45,4 +45,34 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return authUser.getEmail();
     }
+
+    **
+            * Indica se a conta do usuário não está bloqueada.
+            *
+            * @return true se a conta do usuário não estiver bloqueada
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    /**
+     * Indica se as credenciais do usuário (senha) não estão expiradas.
+     *
+     * @return true se as credenciais do usuário não estiverem expiradas
+     */
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    /**
+     * Indica se o usuário está habilitado.
+     *
+     * @return true se o usuário estiver habilitado
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
