@@ -1,7 +1,7 @@
 package edu.infnet.InventorizeAPI.exceptions;
 
-import edu.infnet.InventorizeAPI.exceptions.custom.InvalidTokenException;
-import edu.infnet.InventorizeAPI.exceptions.custom.RegisteredEmailException;
+import edu.infnet.InventorizeAPI.exceptions.custom.*;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +9,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DeletingEntityException.class)
+    public ResponseEntity<String> handleProductAlreadyExistsException(ProductAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("| Erro ao deletar: " + e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedRequestException.class)
+    public ResponseEntity<String> handleUnauthorizedRequestException(UnauthorizedRequestException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("| Acesso não autorizado: " + e.getMessage());
+    }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String> handleProductNotFoundException(ProductNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("| Produto não encontrado: " + e.getMessage());
+    }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<String> handleInvalidTokenException(InvalidTokenException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

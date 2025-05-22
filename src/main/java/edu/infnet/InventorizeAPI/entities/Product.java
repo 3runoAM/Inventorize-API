@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @ToString(exclude = "inventoryItems")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,4 +29,7 @@ public class Product extends AuditableEntity {
 
     @OneToMany(mappedBy = "product")
     private List<InventoryItem> inventoryItems;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private AuthUser owner;
 }

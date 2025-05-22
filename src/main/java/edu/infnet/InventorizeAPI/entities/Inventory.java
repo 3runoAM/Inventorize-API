@@ -35,4 +35,7 @@ public class Inventory extends AuditableEntity {
     @Email
     @NotBlank
     private String notificationEmail;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private AuthUser owner;
 }
