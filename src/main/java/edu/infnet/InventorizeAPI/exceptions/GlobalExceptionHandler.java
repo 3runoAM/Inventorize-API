@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DeletingEntityException.class)
-    public ResponseEntity<String> handleDeletingEntityException(ProductAlreadyExistsException e) {
+    public ResponseEntity<String> handleDeletingEntityException(DeletingEntityException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("| Erro ao deletar: " + e.getMessage());
     }
