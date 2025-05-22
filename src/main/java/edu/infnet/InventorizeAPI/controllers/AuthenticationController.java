@@ -4,10 +4,9 @@ import edu.infnet.InventorizeAPI.dto.request.AuthenticationRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.AuthenticationResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.exceptions.custom.RegisteredEmailException;
-import edu.infnet.InventorizeAPI.services.UserRegistrationService;
+import edu.infnet.InventorizeAPI.services.AuthenticationService;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,17 +14,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 
 @RestController
 @RequestMapping("auth")
 public class AuthenticationController {
     private final JwtService tokenService;
     private final AuthenticationManager authenticationManager;
-    private final UserRegistrationService userRegistrationService;
+    private final AuthenticationService userRegistrationService;
 
-    public AuthenticationController(JwtService tokenService, AuthenticationManager authenticationManager, UserRegistrationService userRegistrationService) {
+    public AuthenticationController(JwtService tokenService, AuthenticationManager authenticationManager, AuthenticationService userRegistrationService) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.userRegistrationService = userRegistrationService;

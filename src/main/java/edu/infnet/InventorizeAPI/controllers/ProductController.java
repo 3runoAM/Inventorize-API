@@ -4,32 +4,57 @@ import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.services.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/product")
+@RequiredArgsConstructor
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-
-    // post
-    @PostMapping("/new")
-    public ResponseEntity<ProductResponseDTO> createNewProduct(@Valid @RequestBody ProductRequestDTO productData) {
+    @PostMapping
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productData) {
         ProductResponseDTO savedProductInfo = productService.createProduct(productData);
         return ResponseEntity.ok(savedProductInfo);
     }
 
-    // get
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getById(@PathVariable UUID id) {
+        ProductResponseDTO productInfo = productService.getById(id);
 
+        return ResponseEntity.ok(productInfo);
+    }
 
-    // put
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDTO>> getAll() {
+        List<ProductResponseDTO> productList = productService.getAll();
 
-    // patch
+        return ResponseEntity.ok(productList);
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable UUID id) {
+        productService.deleteById(id);
+
+        return ResponseEntity.ok("Produto deletado com sucesso");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
+        var productResponseDTO = productService.updateProduct(id, productData);
+
+        return ResponseEntity.ok(productResponseDTO);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
+        var productResponseDTO = productService.updateProduct(id, productData);
+
+        return ResponseEntity.ok(productResponseDTO);
+    }
 }

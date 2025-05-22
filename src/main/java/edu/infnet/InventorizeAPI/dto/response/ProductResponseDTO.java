@@ -8,11 +8,11 @@ public record ProductResponseDTO(
         String name,
         String supplierCode
 ) {
-     public static ProductResponseDTO fromProduct(Product savedProduct){
+     public static ProductResponseDTO fromProduct(Product product){
          return new ProductResponseDTO(
-                 savedProduct.getId(),
-                 savedProduct.getName(),
-                 savedProduct.getSupplierCode()
+                 product.getId(),
+                 product.getName(),
+                 product.getSupplierCode()
          );
      }
 }
