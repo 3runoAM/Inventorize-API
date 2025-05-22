@@ -1,7 +1,6 @@
 package edu.infnet.InventorizeAPI.exceptions;
 
 import edu.infnet.InventorizeAPI.exceptions.custom.*;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DeletingEntityException.class)
-    public ResponseEntity<String> handleProductAlreadyExistsException(ProductAlreadyExistsException e) {
+    public ResponseEntity<String> handleDeletingEntityException(ProductAlreadyExistsException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("| Erro ao deletar: " + e.getMessage());
     }
