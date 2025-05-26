@@ -64,7 +64,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO updateProduct(UUID productId, ProductRequestDTO productData) {
-        var product = validateProductOwnership(productId);
+        Product product = validateProductOwnership(productId);
         var productBuilder = product.toBuilder();
 
         if (productData.name() != null) productBuilder.name(productData.name());

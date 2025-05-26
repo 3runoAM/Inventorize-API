@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @ToString(exclude = "inventoryItems")
 @AllArgsConstructor
 @NoArgsConstructor
