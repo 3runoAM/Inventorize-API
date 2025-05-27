@@ -9,7 +9,6 @@ import edu.infnet.InventorizeAPI.repository.InventoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,7 @@ public class InventoryService {
         return InventoryResponseDTO.from(savedInventory);
     }
 
-    public InventoryResponseDTO getById(@PathVariable UUID id) {
+    public InventoryResponseDTO getById(UUID id) {
         Inventory inventory = validateOwnershipById(id);
 
         return InventoryResponseDTO.from(inventory);
@@ -52,7 +51,6 @@ public class InventoryService {
         Inventory inventory = validateOwnershipById(inventoryId);
 
         var updatedInventory = inventory.updateFromDto(inventoryRequestDTO);
-
         var savedInventory = inventoryRepository.save(updatedInventory);
 
         return InventoryResponseDTO.from(savedInventory);
