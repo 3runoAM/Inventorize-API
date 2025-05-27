@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
-    AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
     private final InventoryRepository inventoryRepository;
 
     public InventoryResponseDTO createInventory(InventoryRequestDTO inventoryRequestDTO) {
