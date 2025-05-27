@@ -2,29 +2,27 @@ package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
+import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
-import edu.infnet.InventorizeAPI.exceptions.custom.DeletingEntityException;
 import edu.infnet.InventorizeAPI.exceptions.custom.ProductAlreadyExistsException;
 import edu.infnet.InventorizeAPI.exceptions.custom.ProductNotFoundException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UnauthorizedRequestException;
 import edu.infnet.InventorizeAPI.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     private final AuthenticationService authService;
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository, AuthenticationService authService) {
-        this.productRepository = productRepository;
-        this.authService = authService;
-    }
-
+    // POST
     public ProductResponseDTO createProduct(ProductRequestDTO productData) {
         if (productRepository.existsByNameAndSupplierCode(productData.name(), productData.supplierCode())){
             throw new ProductAlreadyExistsException(String.format("Já existe um produto cadastrado com: [Nome: %s] e [Código de Fornecedor: %s]",
@@ -40,31 +38,47 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(savedProduct);
     }
 
+    // GET ONE
     public ProductResponseDTO getById(UUID id) {
-        var product = validateProductOwnership(id);
+        var product = validateOwnershipById(id);
 
         return ProductResponseDTO.fromProduct(product);
     }
 
+    // GET ALL
     public List<ProductResponseDTO> getAll() {
-        var userInfo = authService.getAuthenticatedUserInfo();
+        var userInfo = authService.getAuthenticatedUser();
 
-        return productRepository.findAllByOwnerId(userInfo.userId()).stream()
+        return productRepository.findAllByOwnerId(userInfo.getId()).stream()
                 .map(ProductResponseDTO::fromProduct)
                 .toList();
     }
 
+    // DELETE
     public void deleteById(UUID id) {
-        var product = validateProductOwnership(id);
+        var product = validateOwnershipById(id);
 
         productRepository.delete(product);
-
-        if(productRepository.existsById(id)) throw new DeletingEntityException(String.format("Erro ao deletar o produto com o [ ID: %s ]", id));
     }
 
     @Transactional
-    public ProductResponseDTO updateProduct(UUID productId, ProductRequestDTO productData) {
-        Product product = validateProductOwnership(productId);
+    public ProductResponseDTO putProduct(UUID productId, ProductRequestDTO productData) {
+        Product product = validateOwnershipById(productId);
+
+        var productBuilder = product.toBuilder()
+                .id(productId)
+                .name(productData.name())
+                .supplierCode(productData.supplierCode())
+                .build();
+
+        var updatedProduct = productRepository.save(productBuilder);
+
+        return ProductResponseDTO.fromProduct(updatedProduct);
+    }
+
+    @Transactional
+    public ProductResponseDTO patchProduct(UUID productId, ProductRequestDTO productData) {
+        Product product = validateOwnershipById(productId);
         var productBuilder = product.toBuilder();
 
         if (productData.name() != null) productBuilder.name(productData.name());
@@ -75,14 +89,14 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(updatedProduct);
     }
 
+
+
     // Métodos utilitários
+    private Product validateOwnershipById(UUID productId) {
+        var product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(String.format("Produto com o [ ID: %s ] não encontrado", productId)));
+        AuthUser currentUser = authService.getAuthenticatedUser();
 
-    private Product validateProductOwnership(UUID productId) {
-        var userInfo = authService.getAuthenticatedUserInfo();
-        var product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(String.format("Produto com o [ ID: %s ] não encontrado", productId)));
-
-        if (!product.getOwner().getId().equals(userInfo.userId())) throw new UnauthorizedRequestException("Você não tem permissão para gerenciar este produto.");
+        if (!product.getOwner().getId().equals(currentUser.getId())) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este produto");
 
         return product;
     }

@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(InventoryNotFoundException.class)
+    public ResponseEntity<String> handleInventoryNotFoundException(InventoryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("| Inventário não encontrado: " + ex.getMessage());
+    }
+
 
     @ExceptionHandler(DeletingEntityException.class)
     public ResponseEntity<String> handleDeletingEntityException(DeletingEntityException e) {

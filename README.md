@@ -26,7 +26,10 @@ A documentação completa da API está disponível através do Swagger UI após 
 - Validação de dados
 
 ## Status do Projeto
-W.I.P. 💻
+
+### Diagrama de Classes 📊
+
+![Diagrama de Classes](src/main/resources/static/class-diagram.png)
 
 ---
 Desenvolvido por Bruno Martins (@3runoAM) ☕

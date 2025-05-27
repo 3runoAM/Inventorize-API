@@ -1,9 +1,11 @@
 package edu.infnet.InventorizeAPI.entities;
 
+import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -13,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Builder(toBuilder = true)
-@ToString(exclude = "inventoryItems")
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Inventory extends AuditableEntity {
@@ -29,13 +31,22 @@ public class Inventory extends AuditableEntity {
     @Column(length = 200)
     private String description;
 
-    @OneToMany(mappedBy = "inventory", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<@Valid InventoryItem> inventoryItems;
-
     @Email
     @NotBlank
     private String notificationEmail;
 
+    @NotNull
     @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
     private AuthUser owner;
+
+    public Inventory updateFromDto(InventoryRequestDTO inventoryRequestDTO) {
+        var inventoryBuilder = this.toBuilder();
+
+        if (inventoryRequestDTO.name() != null) inventoryBuilder.name(inventoryRequestDTO.name());
+        if (inventoryRequestDTO.description() != null) inventoryBuilder.description(inventoryRequestDTO.description());
+        if (inventoryRequestDTO.notificationEmail() != null) inventoryBuilder.notificationEmail(inventoryRequestDTO.notificationEmail());
+
+        return inventoryBuilder.build();
+    }
 }

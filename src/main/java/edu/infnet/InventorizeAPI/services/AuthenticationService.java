@@ -2,6 +2,7 @@ package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.AuthenticationRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.AuthenticationResponseDTO;
+import edu.infnet.InventorizeAPI.dto.response.UserResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.enums.Role;
 import edu.infnet.InventorizeAPI.exceptions.custom.RegisteredEmailException;
@@ -28,8 +29,8 @@ public class AuthenticationService {
     private final AuthUserRepository authUserRepository;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponseDTO register(AuthenticationRequestDTO userData) {
-        if (this.existsByEmail(userData.email())) throw new RegisteredEmailException("Email já cadastrado");
+    public UserResponseDTO register(AuthenticationRequestDTO userData) {
+        if (this.existsByEmail(userData.email())) throw new RegisteredEmailException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
 
         String encryptedPassword = passwordEncoder.encode(userData.password());
         Set<Role> roles = Set.of(Role.ROLE_USER);
@@ -42,7 +43,7 @@ public class AuthenticationService {
 
         AuthUser savedUser = authUserRepository.save(authUser);
 
-        return new AuthenticationResponseDTO(null, savedUser.getEmail(), savedUser.getId());
+        return UserResponseDTO.from(savedUser);
     }
 
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO userData) {
@@ -52,20 +53,21 @@ public class AuthenticationService {
         String token = tokenService.generateToken((UserDetails) auth.getPrincipal());
         AuthUser user = this.findByEmail(userData.email());
 
-        return new AuthenticationResponseDTO(token, user.getEmail(), user.getId());
+        return AuthenticationResponseDTO.from(token, user);
     }
 
     /*Métodos utilitários*/
-    public AuthenticationResponseDTO getAuthenticatedUserInfo() {
+    public AuthUser getAuthenticatedUser() {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (authUser == null) throw new UserNotAuthenticatedException("Nenhum usuário autenticado encontrado.");
 
-        return new AuthenticationResponseDTO(null, authUser.getEmail(), authUser.getId());
+        return authUser;
     }
 
     public AuthUser findByEmail(String email) {
-        return authUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return authUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
     }
 
     public boolean existsByEmail(String email) {
