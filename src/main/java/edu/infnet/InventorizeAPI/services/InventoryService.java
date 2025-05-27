@@ -3,6 +3,7 @@ package edu.infnet.InventorizeAPI.services;
 import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.entities.Inventory;
+import edu.infnet.InventorizeAPI.exceptions.custom.InventoryNotFoundException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UnauthorizedRequestException;
 import edu.infnet.InventorizeAPI.repository.InventoryRepository;
 import jakarta.transaction.Transactional;
@@ -57,6 +58,7 @@ public class InventoryService {
         return InventoryResponseDTO.from(savedInventory);
     }
 
+    @Transactional
     public InventoryResponseDTO update(UUID id, InventoryRequestDTO inventoryRequestDTO) {
         Inventory inventory = validateOwnershipById(id);
 
@@ -80,7 +82,7 @@ public class InventoryService {
 
     // Métodos utilitários
     private Inventory validateOwnershipById(UUID id) {
-        var inventory = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Inventário não encontrado com o id: " + id));
+        var inventory = inventoryRepository.findById(id).orElseThrow(() -> new InventoryNotFoundException("Inventário com o [ ID: %s ] não encontrado com o id: ".formatted(id)));
         var currentUser = authenticationService.getAuthenticatedUser();
 
         if(!inventory.getOwner().getId().equals(currentUser.getId())) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este inventário.");
