@@ -6,11 +6,13 @@ import edu.infnet.InventorizeAPI.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -20,6 +22,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productData) {
         ProductResponseDTO savedProductInfo = productService.createProduct(productData);
+
         return ResponseEntity.ok(savedProductInfo);
     }
 
@@ -46,14 +49,14 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
-        var productResponseDTO = productService.updateProduct(id, productData);
+        var productResponseDTO = productService.putProduct(id, productData);
 
         return ResponseEntity.ok(productResponseDTO);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
-        var productResponseDTO = productService.updateProduct(id, productData);
+        var productResponseDTO = productService.patchProduct(id, productData);
 
         return ResponseEntity.ok(productResponseDTO);
     }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(DeletingEntityException.class)
     public ResponseEntity<String> handleDeletingEntityException(DeletingEntityException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

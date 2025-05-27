@@ -2,6 +2,7 @@ package edu.infnet.InventorizeAPI.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -30,6 +31,7 @@ public class Product extends AuditableEntity {
     @OneToMany(mappedBy = "product")
     private List<InventoryItem> inventoryItems;
 
+    @NotNull
     @ManyToOne
     private AuthUser owner;
 }

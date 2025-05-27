@@ -2,12 +2,15 @@ package edu.infnet.InventorizeAPI.controllers;
 
 import edu.infnet.InventorizeAPI.dto.request.AuthenticationRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.AuthenticationResponseDTO;
+import edu.infnet.InventorizeAPI.dto.response.UserResponseDTO;
 import edu.infnet.InventorizeAPI.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
@@ -22,8 +25,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody @Valid AuthenticationRequestDTO userData) {
-        AuthenticationResponseDTO savedUser = authenticationService.register(userData);
+    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid AuthenticationRequestDTO userData) {
+        UserResponseDTO savedUser = authenticationService.register(userData);
 
         return ResponseEntity.ok(savedUser);
     }

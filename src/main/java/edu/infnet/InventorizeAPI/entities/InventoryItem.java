@@ -26,14 +26,15 @@ public class InventoryItem extends AuditableEntity {
     private Product product;
 
     @NotNull
+    @ManyToOne
+    @JoinColumn(name = "inventory_id")
+    private Inventory inventory;
+
+    @NotNull
     @PositiveOrZero
     private int currentQuantity;
 
     @NotNull
     @PositiveOrZero
     private int lowStockLimit;
-
-    @ManyToOne
-    @JoinColumn(name = "inventory_id")
-    private Inventory inventory;
 }
