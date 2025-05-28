@@ -2,6 +2,7 @@ package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
+import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Inventory;
 import edu.infnet.InventorizeAPI.exceptions.custom.InventoryNotFoundException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UnauthorizedRequestException;
@@ -50,8 +51,13 @@ public class InventoryService {
     public InventoryResponseDTO patch(UUID inventoryId, InventoryRequestDTO inventoryRequestDTO) {
         Inventory inventory = validateOwnershipById(inventoryId);
 
-        var updatedInventory = inventory.updateFromDto(inventoryRequestDTO);
-        var savedInventory = inventoryRepository.save(updatedInventory);
+        var inventoryBuilder = inventory.toBuilder();
+
+        if (inventoryRequestDTO.name() != null) inventoryBuilder.name(inventoryRequestDTO.name());
+        if (inventoryRequestDTO.description() != null) inventoryBuilder.description(inventoryRequestDTO.description());
+        if (inventoryRequestDTO.notificationEmail() != null) inventoryBuilder.notificationEmail(inventoryRequestDTO.notificationEmail());
+
+        var savedInventory = inventoryRepository.save(inventoryBuilder.build());
 
         return InventoryResponseDTO.from(savedInventory);
     }
@@ -79,12 +85,16 @@ public class InventoryService {
     }
 
     // Métodos utilitários
-    private Inventory validateOwnershipById(UUID id) {
-        var inventory = inventoryRepository.findById(id).orElseThrow(() -> new InventoryNotFoundException("Inventário com o [ ID: %s ] não encontrado com o id: ".formatted(id)));
-        var currentUser = authenticationService.getAuthenticatedUser();
+    protected Inventory validateOwnershipById(UUID inventoryId) {
+        var inventory = inventoryRepository.findById(inventoryId).orElseThrow(() -> new InventoryNotFoundException("Inventário com o [ ID: %s ] não encontrado com o id: ".formatted(inventoryId)));
+        AuthUser currentUser = authenticationService.getAuthenticatedUser();
 
-        if(!inventory.getOwner().getId().equals(currentUser.getId())) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este inventário.");
+        if(!inventory.getOwner().equals(currentUser)) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este inventário.");
 
         return inventory;
+    }
+
+    protected List<Inventory> getAllByOwnerId(UUID ownerId) {
+        return inventoryRepository.findByOwnerId(ownerId);
     }
 }

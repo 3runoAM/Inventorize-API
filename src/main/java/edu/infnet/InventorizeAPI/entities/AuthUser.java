@@ -15,7 +15,8 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @ToString(exclude = "hashPassword")
 public class AuthUser extends AuditableEntity {
     @Id
