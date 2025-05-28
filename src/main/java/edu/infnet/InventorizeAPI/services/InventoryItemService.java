@@ -1,11 +1,14 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.ItemRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.PatchItemRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.entities.*;
 import edu.infnet.InventorizeAPI.exceptions.custom.InventoryItemNotFound;
 import edu.infnet.InventorizeAPI.repository.InventoryItemRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,12 @@ public class InventoryItemService {
     private final AuthenticationService authService;
     private final InventoryItemRepository inventoryItemRepository;
 
+    /**
+     * Cria um novo item de inventário.
+     *
+     * @param itemRequest dados do item a ser criado
+     * @return informações do item criado
+     */
     public ItemResponseDTO create(ItemRequestDTO itemRequest) {
         Product product = productService.validateOwnershipById(itemRequest.productId());
         Inventory inventory = inventoryService.validateOwnershipById(itemRequest.inventoryId());
@@ -38,12 +47,23 @@ public class InventoryItemService {
         return ItemResponseDTO.from(savedInventoryItem);
     }
 
+    /**
+     * Busca um item de inventário pelo seu ID.
+     *
+     * @param id identificador do item
+     * @return informações do item encontrado
+     */
     public ItemResponseDTO getById(UUID id) {
         InventoryItem inventoryItem = validateOwnershipById(id);
 
         return ItemResponseDTO.from(inventoryItem);
     }
 
+    /**
+     * Lista todos os itens de inventário do usuário autenticado.
+     *
+     * @return lista de itens de inventário
+     */
     public List<ItemResponseDTO> getAll(){
         var inventoryIds = inventoryService.getAll()
                 .stream()
@@ -56,6 +76,12 @@ public class InventoryItemService {
                 .toList();
     }
 
+    /**
+     * Lista todos os itens de inventário de um inventário específico.
+     *
+     * @param inventoryId identificador do inventário
+     * @return lista de itens de inventário
+     */
     public List<ItemResponseDTO> getAllByInventoryId(UUID inventoryId) {
         inventoryService.validateOwnershipById(inventoryId);
 
@@ -64,14 +90,19 @@ public class InventoryItemService {
         return items.stream().map(ItemResponseDTO::from).toList();
     }
 
-    public ItemResponseDTO update(UUID id, @Valid ItemRequestDTO itemRequest) {
+    /**
+     * Atualiza um item de inventário existente.
+     *
+     * @param id identificador do item a ser atualizado
+     * @param itemRequest dados do item a ser atualizado
+     * @return informações do item atualizado
+     */
+    public ItemResponseDTO update(UUID id, @Valid UpdateItemDTO itemRequest) {
         InventoryItem item = validateOwnershipById(id);
 
         var updatedItem = item.toBuilder()
                 .currentQuantity(itemRequest.currentQuantity())
                 .lowStockLimit(itemRequest.lowStockLimit())
-                .product(item.getProduct())
-                .inventory(item.getInventory())
                 .build();
 
         var savedItem = inventoryItemRepository.save(updatedItem);
@@ -79,12 +110,19 @@ public class InventoryItemService {
         return ItemResponseDTO.from(savedItem);
     }
 
-    public ItemResponseDTO patch(UUID id, @Valid ItemRequestDTO itemRequest) {
+    /**
+     * Atualiza parcialmente um item de inventário existente.
+     *
+     * @param id identificador do item a ser atualizado
+     * @param itemRequest dados do item a ser atualizado
+     * @return informações do item atualizado
+     */
+    public ItemResponseDTO patch(UUID id, @Valid PatchItemRequestDTO itemRequest) {
         InventoryItem item = validateOwnershipById(id);
 
         var itemBuilder = item.toBuilder();
-        if (itemRequest.currentQuantity() > 0) itemBuilder.currentQuantity(itemRequest.currentQuantity());
-        if (itemRequest.lowStockLimit() > 0) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
+        if (itemRequest.currentQuantity() != null) itemBuilder.currentQuantity(itemRequest.currentQuantity());
+        if (itemRequest.lowStockLimit() != null) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
 
         itemBuilder.product(item.getProduct());
         itemBuilder.inventory(item.getInventory());
@@ -95,18 +133,80 @@ public class InventoryItemService {
         return ItemResponseDTO.from(savedItem);
     }
 
+    /**
+     * Deleta um item de inventário pelo seu ID.
+     *
+     * @param id identificador do item a ser deletado
+     */
     public void deleteById(UUID id) {
         InventoryItem inventoryItem = validateOwnershipById(id);
         inventoryItemRepository.delete(inventoryItem);
     }
 
-    // Métodos utilitários
+    /**
+     * Ajusta a quantidade atual de um item de inventário.
+     *
+     * @param itemId identificador do item
+     * @param adjustment valor a ser ajustado (positivo ou negativo)
+     * @return informações do item atualizado
+     */
+    @Transactional
+    public ItemResponseDTO adjustCurrentQuantity(UUID itemId, int adjustment) {
+        var inventoryItem = validateOwnershipWithLock(itemId);
+
+        var newQuantity = Math.max((inventoryItem.getCurrentQuantity() + adjustment), 0);
+        var newItem = inventoryItem.toBuilder().currentQuantity(newQuantity).build();
+        var updatedItem = inventoryItemRepository.save(newItem);
+
+        return ItemResponseDTO.from(updatedItem);
+    }
+
+    /**
+     * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item.
+     * @param inventoryItemId identificador do item de inventário
+     * @return InventoryItem validado
+     */
     private InventoryItem validateOwnershipById(UUID inventoryItemId) {
-        var inventoryItem = inventoryItemRepository.findById(inventoryItemId).orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
+        var inventoryItem = findById(inventoryItemId);
 
         inventoryService.validateOwnershipById(inventoryItem.getInventory().getId());
         productService.validateOwnershipById(inventoryItem.getProduct().getId());
 
         return inventoryItem;
+    }
+
+    /**
+     * Busca um item de inventário pelo seu ID
+     * @param inventoryItemId identificador do item de inventário
+     * @return InventoryItem encontrado
+     */
+    private InventoryItem findById(UUID inventoryItemId) {
+        return inventoryItemRepository.findById(inventoryItemId)
+                .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
+    }
+
+    /**
+     * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item, com bloqueio para evitar concorrência.
+     * @param inventoryItemId identificador do item de inventário
+     * @return InventoryItem validado com bloqueio
+     */
+    private InventoryItem validateOwnershipWithLock(UUID inventoryItemId) {
+        var inventoryItem = findByIdWithLock(inventoryItemId);
+
+        inventoryService.validateOwnershipById(inventoryItem.getInventory().getId());
+        productService.validateOwnershipById(inventoryItem.getProduct().getId());
+
+        return inventoryItem;
+    }
+
+    /**
+     * Busca um item de inventário pelo seu ID com bloqueio para evitar concorrência.
+     * @param inventoryItemId identificador do item de inventário
+     * @throws InventoryItemNotFound se o item não for encontrado
+     * @return InventoryItem encontrado com bloqueio
+     */
+    private InventoryItem findByIdWithLock(UUID inventoryItemId) {
+        return inventoryItemRepository.findItemById(inventoryItemId)
+                .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
     }
 }

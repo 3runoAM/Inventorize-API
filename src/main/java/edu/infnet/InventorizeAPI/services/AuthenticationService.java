@@ -29,6 +29,12 @@ public class AuthenticationService {
     private final AuthUserRepository authUserRepository;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Registra um novo usuário no sistema.
+     *
+     * @param userData Dados do usuário a ser registrado.
+     * @return Informações do usuário registrado.
+     */
     public UserResponseDTO register(AuthenticationRequestDTO userData) {
         if (this.existsByEmail(userData.email())) throw new RegisteredEmailException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
 
@@ -46,6 +52,12 @@ public class AuthenticationService {
         return UserResponseDTO.from(savedUser);
     }
 
+    /**
+     * Autentica um usuário com base nos dados fornecidos.
+     *
+     * @param userData Dados de autenticação do usuário.
+     * @return Resposta com o token de autenticação e informações do usuário.
+     */
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO userData) {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(userData.email(), userData.password());
         Authentication auth = authenticationManager.authenticate(usernamePassword);
@@ -56,7 +68,12 @@ public class AuthenticationService {
         return AuthenticationResponseDTO.from(token, user);
     }
 
-    /*Métodos utilitários*/
+    /**
+     * Obtém o usuário autenticado atualmente.
+     *
+     * @return O usuário autenticado.
+     * @throws UserNotAuthenticatedException Se nenhum usuário estiver autenticado.
+     */
     protected AuthUser getAuthenticatedUser() {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (authUser == null) throw new UserNotAuthenticatedException("Nenhum usuário autenticado encontrado.");
@@ -64,11 +81,24 @@ public class AuthenticationService {
         return authUser;
     }
 
+    /**
+     * Busca um usuário pelo email.
+     *
+     * @param email Email do usuário a ser buscado.
+     * @return O usuário encontrado.
+     * @throws UsernameNotFoundException Se nenhum usuário for encontrado com o email fornecido.
+     */
     protected AuthUser findByEmail(String email) {
         return authUserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
     }
 
+    /**
+     * Verifica se um usuário existe pelo email.
+     *
+     * @param email Email do usuário a ser verificado.
+     * @return true se o usuário existir, false caso contrário.
+     */
     protected boolean existsByEmail(String email) {
         return authUserRepository.existsByEmail(email);
     }

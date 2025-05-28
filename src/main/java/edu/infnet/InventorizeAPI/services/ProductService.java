@@ -1,5 +1,6 @@
 package edu.infnet.InventorizeAPI.services;
 
+import edu.infnet.InventorizeAPI.dto.request.PatchProductDTO;
 import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
@@ -22,7 +23,12 @@ public class ProductService {
     private final AuthenticationService authService;
     private final ProductRepository productRepository;
 
-    // POST
+    /**
+     * Cria um novo produto.
+     *
+     * @param productData dados do produto a ser criado
+     * @return informações do produto criado
+     */
     public ProductResponseDTO createProduct(ProductRequestDTO productData) {
         if (productRepository.existsByNameAndSupplierCode(productData.name(), productData.supplierCode())){
             throw new ProductAlreadyExistsException(String.format("Já existe um produto cadastrado com: [Nome: %s] e [Código de Fornecedor: %s]",
@@ -38,14 +44,22 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(savedProduct);
     }
 
-    // GET ONE
+    /**
+     * Busca um produto pelo seu ID.
+     * @param id
+     * @return
+     */
     public ProductResponseDTO getById(UUID id) {
         var product = validateOwnershipById(id);
 
         return ProductResponseDTO.fromProduct(product);
     }
 
-    // GET ALL
+    /**
+     * Busca todos os produtos do usuário autenticado.
+     *
+     * @return lista de produtos do usuário
+     */
     public List<ProductResponseDTO> getAll() {
         var userInfo = authService.getAuthenticatedUser();
 
@@ -54,13 +68,24 @@ public class ProductService {
                 .toList();
     }
 
-    // DELETE
+    /**
+     * Deleta um produto pelo seu ID.
+     *
+     * @param id ID do produto a ser deletado
+     */
     public void deleteById(UUID id) {
         var product = validateOwnershipById(id);
 
         productRepository.delete(product);
     }
 
+    /**
+     * Atualiza um produto existente com os dados fornecidos.
+     *
+     * @param productId ID do produto a ser atualizado
+     * @param productData dados do produto a serem atualizados
+     * @return informações do produto atualizado
+     */
     @Transactional
     public ProductResponseDTO putProduct(UUID productId, ProductRequestDTO productData) {
         Product product = validateOwnershipById(productId);
@@ -76,8 +101,15 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(updatedProduct);
     }
 
+    /**
+     * Atualiza parcialmente um produto existente com os dados fornecidos.
+     *
+     * @param productId ID do produto a ser atualizado
+     * @param productData dados do produto a serem atualizados
+     * @return informações do produto atualizado
+     */
     @Transactional
-    public ProductResponseDTO patchProduct(UUID productId, ProductRequestDTO productData) {
+    public ProductResponseDTO patchProduct(UUID productId, PatchProductDTO productData) {
         Product product = validateOwnershipById(productId);
         var productBuilder = product.toBuilder();
 
@@ -89,6 +121,14 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(updatedProduct);
     }
 
+    /**
+     * Valida se o usuário autenticado é o proprietário do produto com o ID fornecido.
+     *
+     * @param productId ID do produto a ser validado
+     * @return o produto se o usuário for o proprietário
+     * @throws ProductNotFoundException se o produto não for encontrado
+     * @throws UnauthorizedRequestException se o usuário não for o proprietário do produto
+     */
     protected Product validateOwnershipById(UUID productId) {
         var product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(String.format("Produto com o [ ID: %s ] não encontrado", productId)));
         AuthUser currentUser = authService.getAuthenticatedUser();
