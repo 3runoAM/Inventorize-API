@@ -83,8 +83,8 @@ public class InventoryItemService {
         InventoryItem item = validateOwnershipById(id);
 
         var itemBuilder = item.toBuilder();
-        if (itemRequest.currentQuantity() < 0) itemBuilder.currentQuantity(itemRequest.currentQuantity());
-        if (itemRequest.lowStockLimit() < 0) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
+        if (itemRequest.currentQuantity() > 0) itemBuilder.currentQuantity(itemRequest.currentQuantity());
+        if (itemRequest.lowStockLimit() > 0) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
 
         itemBuilder.product(item.getProduct());
         itemBuilder.inventory(item.getInventory());

@@ -40,7 +40,7 @@ public class InventoryItemController {
         return ResponseEntity.ok(items);
     }
 
-    @GetMapping("/{inventoryId}")
+    @GetMapping("/inventory/{inventoryId}")
     public ResponseEntity<List<ItemResponseDTO>> getAllByInventory(@PathVariable UUID inventoryId) {
         List<ItemResponseDTO> items = inventoryItemService.getAllByInventoryId(inventoryId);
 
