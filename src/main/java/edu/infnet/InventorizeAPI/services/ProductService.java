@@ -1,5 +1,6 @@
 package edu.infnet.InventorizeAPI.services;
 
+import edu.infnet.InventorizeAPI.dto.request.PatchProductDTO;
 import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
@@ -68,10 +69,9 @@ public class ProductService {
     }
 
     /**
-     * Busca todos os produtos de um usuário específico.
+     * Deleta um produto pelo seu ID.
      *
-     * @param id ID do usuário
-     * @return lista de produtos do usuário
+     * @param id ID do produto a ser deletado
      */
     public void deleteById(UUID id) {
         var product = validateOwnershipById(id);
@@ -109,7 +109,7 @@ public class ProductService {
      * @return informações do produto atualizado
      */
     @Transactional
-    public ProductResponseDTO patchProduct(UUID productId, ProductRequestDTO productData) {
+    public ProductResponseDTO patchProduct(UUID productId, PatchProductDTO productData) {
         Product product = validateOwnershipById(productId);
         var productBuilder = product.toBuilder();
 

@@ -1,6 +1,7 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.PatchInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Inventory;
@@ -66,13 +67,14 @@ public class InventoryService {
     }
 
     /**
-     * Busca todos os inventários de um usuário específico.
+     * Atualiza parcialmente um inventário existente.
      *
-     * @param ownerId ID do proprietário dos inventários
-     * @return lista de inventários do proprietário
+     * @param inventoryId identificador do inventário a ser atualizado
+     * @param inventoryRequestDTO dados atualizados do inventário
+     * @return informações do inventário atualizado
      */
     @Transactional
-    public InventoryResponseDTO patch(UUID inventoryId, InventoryRequestDTO inventoryRequestDTO) {
+    public InventoryResponseDTO patch(UUID inventoryId, PatchInventoryDTO inventoryRequestDTO) {
         Inventory inventory = validateOwnershipById(inventoryId);
 
         var inventoryBuilder = inventory.toBuilder();

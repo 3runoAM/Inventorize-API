@@ -1,5 +1,6 @@
 package edu.infnet.InventorizeAPI.controllers;
 
+import edu.infnet.InventorizeAPI.dto.request.PatchProductDTO;
 import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.services.ProductService;
@@ -93,7 +94,7 @@ public class ProductController {
      * @return informações do produto atualizado
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
+    public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody PatchProductDTO productData) {
         var productResponseDTO = productService.patchProduct(id, productData);
 
         return ResponseEntity.ok(productResponseDTO);
