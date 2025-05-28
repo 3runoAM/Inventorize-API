@@ -11,7 +11,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Builder(toBuilder = true)
-@ToString(exclude = {"product", "inventory"})
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class InventoryItem extends AuditableEntity {
@@ -21,12 +21,12 @@ public class InventoryItem extends AuditableEntity {
     private UUID id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id")
     private Inventory inventory;
 

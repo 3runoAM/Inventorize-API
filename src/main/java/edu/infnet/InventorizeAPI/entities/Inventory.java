@@ -39,14 +39,4 @@ public class Inventory extends AuditableEntity {
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private AuthUser owner;
-
-    public Inventory updateFromDto(InventoryRequestDTO inventoryRequestDTO) {
-        var inventoryBuilder = this.toBuilder();
-
-        if (inventoryRequestDTO.name() != null) inventoryBuilder.name(inventoryRequestDTO.name());
-        if (inventoryRequestDTO.description() != null) inventoryBuilder.description(inventoryRequestDTO.description());
-        if (inventoryRequestDTO.notificationEmail() != null) inventoryBuilder.notificationEmail(inventoryRequestDTO.notificationEmail());
-
-        return inventoryBuilder.build();
-    }
 }

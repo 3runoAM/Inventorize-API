@@ -57,20 +57,19 @@ public class AuthenticationService {
     }
 
     /*Métodos utilitários*/
-    public AuthUser getAuthenticatedUser() {
+    protected AuthUser getAuthenticatedUser() {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         if (authUser == null) throw new UserNotAuthenticatedException("Nenhum usuário autenticado encontrado.");
 
         return authUser;
     }
 
-    public AuthUser findByEmail(String email) {
+    protected AuthUser findByEmail(String email) {
         return authUserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
     }
 
-    public boolean existsByEmail(String email) {
+    protected boolean existsByEmail(String email) {
         return authUserRepository.existsByEmail(email);
     }
 }

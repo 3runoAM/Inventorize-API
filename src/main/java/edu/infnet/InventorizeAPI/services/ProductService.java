@@ -89,14 +89,11 @@ public class ProductService {
         return ProductResponseDTO.fromProduct(updatedProduct);
     }
 
-
-
-    // Métodos utilitários
-    private Product validateOwnershipById(UUID productId) {
+    protected Product validateOwnershipById(UUID productId) {
         var product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(String.format("Produto com o [ ID: %s ] não encontrado", productId)));
         AuthUser currentUser = authService.getAuthenticatedUser();
 
-        if (!product.getOwner().getId().equals(currentUser.getId())) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este produto");
+        if (!product.getOwner().equals(currentUser)) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este produto");
 
         return product;
     }
