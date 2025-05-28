@@ -20,6 +20,13 @@ public class InventoryService {
     private final AuthenticationService authenticationService;
     private final InventoryRepository inventoryRepository;
 
+
+    /**
+     * Cria um novo inventário.
+     *
+     * @param inventoryRequestDTO dados do inventário a ser criado
+     * @return informações do inventário criado
+     */
     public InventoryResponseDTO createInventory(InventoryRequestDTO inventoryRequestDTO) {
         var newInventory = Inventory.builder()
                 .name(inventoryRequestDTO.name())
@@ -33,12 +40,23 @@ public class InventoryService {
         return InventoryResponseDTO.from(savedInventory);
     }
 
+    /**
+     * Busca um inventário pelo seu ID.
+     *
+     * @param id identificador do inventário
+     * @return informações do inventário encontrado
+     */
     public InventoryResponseDTO getById(UUID id) {
         Inventory inventory = validateOwnershipById(id);
 
         return InventoryResponseDTO.from(inventory);
     }
 
+    /**
+     * Busca todos os inventários do usuário autenticado.
+     *
+     * @return lista de inventários do usuário
+     */
     public List<InventoryResponseDTO> getAll() {
         var currentUser = authenticationService.getAuthenticatedUser();
         return inventoryRepository.findByOwnerId(currentUser.getId())
@@ -47,6 +65,12 @@ public class InventoryService {
                 .toList();
     }
 
+    /**
+     * Busca todos os inventários de um usuário específico.
+     *
+     * @param ownerId ID do proprietário dos inventários
+     * @return lista de inventários do proprietário
+     */
     @Transactional
     public InventoryResponseDTO patch(UUID inventoryId, InventoryRequestDTO inventoryRequestDTO) {
         Inventory inventory = validateOwnershipById(inventoryId);
@@ -62,6 +86,13 @@ public class InventoryService {
         return InventoryResponseDTO.from(savedInventory);
     }
 
+    /**
+     * Atualiza um inventário existente.
+     *
+     * @param id identificador do inventário a ser atualizado
+     * @param inventoryRequestDTO dados atualizados do inventário
+     * @return informações do inventário atualizado
+     */
     @Transactional
     public InventoryResponseDTO update(UUID id, InventoryRequestDTO inventoryRequestDTO) {
         Inventory inventory = validateOwnershipById(id);
@@ -79,12 +110,24 @@ public class InventoryService {
         return InventoryResponseDTO.from(savedInventory);
     }
 
+    /**
+     * Deleta um inventário pelo seu ID.
+     *
+     * @param id identificador do inventário a ser deletado
+     */
     public void delete(UUID id) {
         var inventory = validateOwnershipById(id);
         inventoryRepository.delete(inventory);
     }
 
-    // Métodos utilitários
+    /**
+     * Valida se o usuário autenticado é o proprietário do inventário.
+     *
+     * @param inventoryId ID do inventário a ser validado
+     * @return o inventário se o usuário for o proprietário
+     * @throws InventoryNotFoundException se o inventário não for encontrado
+     * @throws UnauthorizedRequestException se o usuário não for o proprietário
+     */
     protected Inventory validateOwnershipById(UUID inventoryId) {
         var inventory = inventoryRepository.findById(inventoryId).orElseThrow(() -> new InventoryNotFoundException("Inventário com o [ ID: %s ] não encontrado com o id: ".formatted(inventoryId)));
         AuthUser currentUser = authenticationService.getAuthenticatedUser();
@@ -92,9 +135,5 @@ public class InventoryService {
         if(!inventory.getOwner().equals(currentUser)) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este inventário.");
 
         return inventory;
-    }
-
-    protected List<Inventory> getAllByOwnerId(UUID ownerId) {
-        return inventoryRepository.findByOwnerId(ownerId);
     }
 }

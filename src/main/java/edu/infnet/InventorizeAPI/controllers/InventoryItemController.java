@@ -14,12 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-
-/**
- * Controlador REST para gerenciar itens de inventário.
- * Fornece endpoints para criar, buscar, atualizar, ajustar quantidade e deletar itens.
- */
-
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +29,7 @@ public class InventoryItemController {
      */
     @PostMapping
     public ResponseEntity<ItemResponseDTO> createInventoryItem(@Valid @RequestBody ItemRequestDTO itemRequest) {
-        ItemResponseDTO inventoryItemInfo = inventoryItemService.create(ItemRequest);
+        ItemResponseDTO inventoryItemInfo = inventoryItemService.create(itemRequest);
 
         return ResponseEntity.ok(inventoryItemInfo);
     }
@@ -107,7 +101,7 @@ public class InventoryItemController {
     }
 
     /**
-     * * Atualiza a quantidade atual de um item de inventário.
+     * Atualiza a quantidade atual de um item de inventário.
      * @param id identificador do item
      * @param adjustment quantidade a ser ajustada (pode ser positiva ou negativa)
      * @return informações do item atualizado

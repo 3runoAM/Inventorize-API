@@ -19,6 +19,12 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
 
+    /**
+     * Cria um novo produto.
+     *
+     * @param productData dados do produto a ser criado
+     * @return informações do produto criado
+     */
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productData) {
         ProductResponseDTO savedProductInfo = productService.createProduct(productData);
@@ -26,6 +32,12 @@ public class ProductController {
         return ResponseEntity.ok(savedProductInfo);
     }
 
+    /**
+     * Busca um produto pelo seu ID.
+     *
+     * @param id identificador do produto
+     * @return informações do produto encontrado
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> getById(@PathVariable UUID id) {
         ProductResponseDTO productInfo = productService.getById(id);
@@ -33,6 +45,12 @@ public class ProductController {
         return ResponseEntity.ok(productInfo);
     }
 
+
+    /**
+     * Lista todos os produtos do usuário autenticado.
+     *
+     * @return lista de produtos
+     */
     @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> getAll() {
         List<ProductResponseDTO> productList = productService.getAll();
@@ -40,6 +58,12 @@ public class ProductController {
         return ResponseEntity.ok(productList);
     }
 
+    /**
+     * Deleta um produto pelo seu ID.
+     *
+     * @param id identificador do produto a ser deletado
+     * @return mensagem de sucesso
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable UUID id) {
         productService.deleteById(id);
@@ -47,6 +71,13 @@ public class ProductController {
         return ResponseEntity.ok("Produto deletado com sucesso");
     }
 
+    /**
+     * Atualiza um produto existente.
+     *
+     * @param id identificador do produto a ser atualizado
+     * @param productData dados do produto a ser atualizado
+     * @return informações do produto atualizado
+     */
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
         var productResponseDTO = productService.putProduct(id, productData);
@@ -54,6 +85,13 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDTO);
     }
 
+    /**
+     * Atualiza parcialmente um produto existente.
+     *
+     * @param id identificador do produto a ser atualizado
+     * @param productData dados do produto a ser atualizado
+     * @return informações do produto atualizado
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequestDTO productData) {
         var productResponseDTO = productService.patchProduct(id, productData);
