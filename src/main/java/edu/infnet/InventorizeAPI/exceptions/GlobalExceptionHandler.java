@@ -14,7 +14,6 @@ public class GlobalExceptionHandler {
                 .body("| Inventário não encontrado: " + ex.getMessage());
     }
 
-
     @ExceptionHandler(DeletingEntityException.class)
     public ResponseEntity<String> handleDeletingEntityException(DeletingEntityException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -38,8 +37,8 @@ public class GlobalExceptionHandler {
                 .body("| Token inválido: " + e.getMessage());
     }
 
-    @ExceptionHandler(RegisteredEmailException.class)
-    public ResponseEntity<String> handleRegisteredEmailException(RegisteredEmailException e) {
+    @ExceptionHandler(UserAlreadyRegisteredException.class)
+    public ResponseEntity<String> handleUserAlreadyRegisteredException(UserAlreadyRegisteredException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("| Email já cadastrado: " + e.getMessage());
     }
