@@ -39,7 +39,7 @@ public class InventoryItemService {
                 .product(product)
                 .inventory(inventory)
                 .currentQuantity(itemRequest.currentQuantity())
-                .lowStockLimit(itemRequest.lowStockLimit())
+                .minimumStockLevel(itemRequest.lowStockLimit())
                 .build();
 
         var savedInventoryItem = inventoryItemRepository.save(newInventoryItem);
@@ -102,7 +102,7 @@ public class InventoryItemService {
 
         var updatedItem = item.toBuilder()
                 .currentQuantity(itemRequest.currentQuantity())
-                .lowStockLimit(itemRequest.lowStockLimit())
+                .minimumStockLevel(itemRequest.lowStockLimit())
                 .build();
 
         var savedItem = inventoryItemRepository.save(updatedItem);
@@ -122,7 +122,7 @@ public class InventoryItemService {
 
         var itemBuilder = item.toBuilder();
         if (itemRequest.currentQuantity() != null) itemBuilder.currentQuantity(itemRequest.currentQuantity());
-        if (itemRequest.lowStockLimit() != null) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
+        if (itemRequest.lowStockLimit() != null) itemBuilder.minimumStockLevel(itemRequest.lowStockLimit());
 
         itemBuilder.product(item.getProduct());
         itemBuilder.inventory(item.getInventory());

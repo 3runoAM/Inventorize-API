@@ -11,7 +11,7 @@ public record PatchItemRequestDTO(
     public static PatchItemRequestDTO from(InventoryItem item) {
         return new PatchItemRequestDTO(
                 item.getCurrentQuantity(),
-                item.getLowStockLimit()
+                item.getMinimumStockLevel()
         );
     }
 }

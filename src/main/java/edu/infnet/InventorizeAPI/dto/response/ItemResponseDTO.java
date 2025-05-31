@@ -17,7 +17,7 @@ public record ItemResponseDTO(
                 item.getProduct().getId(),
                 item.getInventory().getId(),
                 item.getCurrentQuantity(),
-                item.getLowStockLimit()
+                item.getMinimumStockLevel()
         );
     }
 }
