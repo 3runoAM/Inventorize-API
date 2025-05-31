@@ -20,9 +20,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class InventoryItemService {
+    private final EmailService emailService;
     private final ProductService productService;
     private final InventoryService inventoryService;
-    private final AuthenticationService authService;
     private final InventoryItemRepository inventoryItemRepository;
 
     /**
@@ -39,7 +39,7 @@ public class InventoryItemService {
                 .product(product)
                 .inventory(inventory)
                 .currentQuantity(itemRequest.currentQuantity())
-                .lowStockLimit(itemRequest.lowStockLimit())
+                .minimumStockLevel(itemRequest.minimumStockLevel())
                 .build();
 
         var savedInventoryItem = inventoryItemRepository.save(newInventoryItem);
@@ -64,7 +64,7 @@ public class InventoryItemService {
      *
      * @return lista de itens de inventário
      */
-    public List<ItemResponseDTO> getAll(){
+    public List<ItemResponseDTO> getAll() {
         var inventoryIds = inventoryService.getAll()
                 .stream()
                 .map(InventoryResponseDTO::inventoryId)
@@ -93,7 +93,7 @@ public class InventoryItemService {
     /**
      * Atualiza um item de inventário existente.
      *
-     * @param id identificador do item a ser atualizado
+     * @param id          identificador do item a ser atualizado
      * @param itemRequest dados do item a ser atualizado
      * @return informações do item atualizado
      */
@@ -102,7 +102,7 @@ public class InventoryItemService {
 
         var updatedItem = item.toBuilder()
                 .currentQuantity(itemRequest.currentQuantity())
-                .lowStockLimit(itemRequest.lowStockLimit())
+                .minimumStockLevel(itemRequest.minimumStockLevel())
                 .build();
 
         var savedItem = inventoryItemRepository.save(updatedItem);
@@ -113,7 +113,7 @@ public class InventoryItemService {
     /**
      * Atualiza parcialmente um item de inventário existente.
      *
-     * @param id identificador do item a ser atualizado
+     * @param id          identificador do item a ser atualizado
      * @param itemRequest dados do item a ser atualizado
      * @return informações do item atualizado
      */
@@ -122,7 +122,7 @@ public class InventoryItemService {
 
         var itemBuilder = item.toBuilder();
         if (itemRequest.currentQuantity() != null) itemBuilder.currentQuantity(itemRequest.currentQuantity());
-        if (itemRequest.lowStockLimit() != null) itemBuilder.lowStockLimit(itemRequest.lowStockLimit());
+        if (itemRequest.minimumStockLevel() != null) itemBuilder.minimumStockLevel(itemRequest.minimumStockLevel());
 
         itemBuilder.product(item.getProduct());
         itemBuilder.inventory(item.getInventory());
@@ -146,7 +146,7 @@ public class InventoryItemService {
     /**
      * Ajusta a quantidade atual de um item de inventário.
      *
-     * @param itemId identificador do item
+     * @param itemId     identificador do item
      * @param adjustment valor a ser ajustado (positivo ou negativo)
      * @return informações do item atualizado
      */
@@ -158,11 +158,14 @@ public class InventoryItemService {
         var newItem = inventoryItem.toBuilder().currentQuantity(newQuantity).build();
         var updatedItem = inventoryItemRepository.save(newItem);
 
+        sendEmailIfLowStock(updatedItem);
+
         return ItemResponseDTO.from(updatedItem);
     }
 
     /**
      * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item.
+     *
      * @param inventoryItemId identificador do item de inventário
      * @return InventoryItem validado
      */
@@ -177,6 +180,7 @@ public class InventoryItemService {
 
     /**
      * Busca um item de inventário pelo seu ID
+     *
      * @param inventoryItemId identificador do item de inventário
      * @return InventoryItem encontrado
      */
@@ -187,6 +191,7 @@ public class InventoryItemService {
 
     /**
      * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item, com bloqueio para evitar concorrência.
+     *
      * @param inventoryItemId identificador do item de inventário
      * @return InventoryItem validado com bloqueio
      */
@@ -201,12 +206,35 @@ public class InventoryItemService {
 
     /**
      * Busca um item de inventário pelo seu ID com bloqueio para evitar concorrência.
+     *
      * @param inventoryItemId identificador do item de inventário
-     * @throws InventoryItemNotFound se o item não for encontrado
      * @return InventoryItem encontrado com bloqueio
+     * @throws InventoryItemNotFound se o item não for encontrado
      */
     private InventoryItem findByIdWithLock(UUID inventoryItemId) {
         return inventoryItemRepository.findItemById(inventoryItemId)
                 .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
+    }
+
+    /**
+    * Verifica se o estoque do item está baixo e envia um e-mail de notificação se necessário.
+    *
+    * @param item o item de inventário a ser verificado
+    */
+    private void sendEmailIfLowStock(InventoryItem item) {
+        if (isLowStock(item)) {
+            String emailBody = emailService.createEmailBody(item.getInventory().getName(), item.getProduct().getName(), item.getCurrentQuantity());
+            emailService.sendEmail(item.getInventory().getNotificationEmail(), emailBody);
+        }
+    }
+
+    /**
+     * Verifica se o item de inventário está com estoque baixo.
+     *
+     * @param item o item de inventário a ser verificado
+     * @return true se o estoque estiver baixo, false caso contrário
+     */
+    private boolean isLowStock(InventoryItem item) {
+        return item.getCurrentQuantity() <= item.getMinimumStockLevel();
     }
 }

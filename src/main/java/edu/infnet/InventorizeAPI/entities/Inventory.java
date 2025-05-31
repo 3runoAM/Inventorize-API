@@ -1,15 +1,12 @@
 package edu.infnet.InventorizeAPI.entities;
 
-import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity

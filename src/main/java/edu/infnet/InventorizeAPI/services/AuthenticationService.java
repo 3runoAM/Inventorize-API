@@ -5,7 +5,7 @@ import edu.infnet.InventorizeAPI.dto.response.AuthenticationResponseDTO;
 import edu.infnet.InventorizeAPI.dto.response.UserResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.enums.Role;
-import edu.infnet.InventorizeAPI.exceptions.custom.RegisteredEmailException;
+import edu.infnet.InventorizeAPI.exceptions.custom.UserAlreadyRegisteredException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException;
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
@@ -36,7 +36,7 @@ public class AuthenticationService {
      * @return Informações do usuário registrado.
      */
     public UserResponseDTO register(AuthenticationRequestDTO userData) {
-        if (this.existsByEmail(userData.email())) throw new RegisteredEmailException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
+        if (this.existsByEmail(userData.email())) throw new UserAlreadyRegisteredException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
 
         String encryptedPassword = passwordEncoder.encode(userData.password());
         Set<Role> roles = Set.of(Role.ROLE_USER);

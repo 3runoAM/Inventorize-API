@@ -106,7 +106,7 @@ public class InventoryItemController {
      * @param adjustment quantidade a ser ajustada (pode ser positiva ou negativa)
      * @return informações do item atualizado
      */
-    @PatchMapping("/{id}/quantity")
+    @PatchMapping("/{id}/adjust")
     public ResponseEntity<ItemResponseDTO> adjustInventoryItemQuantity(@PathVariable UUID id, @RequestParam int adjustment) {
         ItemResponseDTO updatedItem = inventoryItemService.adjustCurrentQuantity(id, adjustment);
 

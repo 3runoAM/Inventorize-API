@@ -9,5 +9,5 @@ public record ItemRequestDTO(
         @NotNull UUID productId,
         @NotNull UUID inventoryId,
         @NotNull @PositiveOrZero int currentQuantity,
-        @NotNull @PositiveOrZero int lowStockLimit
+        @NotNull @PositiveOrZero int minimumStockLevel
 ) {}

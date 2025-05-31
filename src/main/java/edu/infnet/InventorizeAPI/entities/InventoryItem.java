@@ -36,5 +36,5 @@ public class InventoryItem extends AuditableEntity {
 
     @NotNull
     @PositiveOrZero
-    private int lowStockLimit;
+    private int minimumStockLevel;
 }
