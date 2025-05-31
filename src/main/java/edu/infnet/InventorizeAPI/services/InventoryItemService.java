@@ -158,6 +158,7 @@ public class InventoryItemService {
         var newItem = inventoryItem.toBuilder().currentQuantity(newQuantity).build();
         var updatedItem = inventoryItemRepository.save(newItem);
 
+        sendEmailIfLowStock(updatedItem);
 
         return ItemResponseDTO.from(updatedItem);
     }
