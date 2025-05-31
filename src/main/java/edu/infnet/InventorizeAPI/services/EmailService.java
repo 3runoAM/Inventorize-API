@@ -16,4 +16,9 @@ public class EmailService {
         message.setSubject("Alerta de estoque baixo");
         message.setText(body);
     }
+
+    public String createEmailBody(String inventoryName, String itemName, int quantity) {
+        return String.format("O inventário '%s' está com o item '%s' com quantidade baixa: %d unidades.",
+                inventoryName, itemName, quantity);
+    }
 }

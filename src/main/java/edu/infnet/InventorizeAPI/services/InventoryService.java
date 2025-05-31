@@ -21,7 +21,6 @@ public class InventoryService {
     private final AuthenticationService authenticationService;
     private final InventoryRepository inventoryRepository;
 
-
     /**
      * Cria um novo inventário.
      *
