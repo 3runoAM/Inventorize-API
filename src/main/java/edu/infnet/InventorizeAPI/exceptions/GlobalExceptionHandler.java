@@ -8,6 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex){
+        return  ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body("| Ajuste inválido: " + ex.getMessage());
+    }
+
     @ExceptionHandler(InventoryNotFoundException.class)
     public ResponseEntity<String> handleInventoryNotFoundException(InventoryNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
