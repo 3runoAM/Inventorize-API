@@ -5,6 +5,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public record UpdateItemDTO(
         @NotNull @PositiveOrZero int currentQuantity,
-        @NotNull @PositiveOrZero int lowStockLimit
+        @NotNull @PositiveOrZero int minimumStockLevel
 ) {
 }

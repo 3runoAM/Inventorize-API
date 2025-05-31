@@ -9,7 +9,7 @@ public record ItemResponseDTO(
         UUID productId,
         UUID inventoryId,
         int currentQuantity,
-        int lowStockLimit
+        int minimumStockLevel
 ) {
     public static ItemResponseDTO from(InventoryItem item) {
         return new ItemResponseDTO(

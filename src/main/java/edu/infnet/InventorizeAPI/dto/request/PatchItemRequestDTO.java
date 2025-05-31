@@ -6,7 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public record PatchItemRequestDTO(
         @PositiveOrZero Integer currentQuantity,
-        @PositiveOrZero Integer lowStockLimit)
+        @PositiveOrZero Integer minimumStockLevel)
 {
     public static PatchItemRequestDTO from(InventoryItem item) {
         return new PatchItemRequestDTO(
