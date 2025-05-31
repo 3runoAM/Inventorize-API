@@ -6,6 +6,7 @@ import edu.infnet.InventorizeAPI.dto.request.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.entities.*;
+import edu.infnet.InventorizeAPI.exceptions.custom.InsufficientStockException;
 import edu.infnet.InventorizeAPI.exceptions.custom.InventoryItemNotFound;
 import edu.infnet.InventorizeAPI.repository.InventoryItemRepository;
 import jakarta.transaction.Transactional;
@@ -148,13 +149,17 @@ public class InventoryItemService {
      *
      * @param itemId     identificador do item
      * @param adjustment valor a ser ajustado (positivo ou negativo)
+     * @throws InsufficientStockException se o ajuste resultar em quantidade negativa
      * @return informações do item atualizado
      */
     @Transactional
     public ItemResponseDTO adjustCurrentQuantity(UUID itemId, int adjustment) {
         var inventoryItem = validateOwnershipWithLock(itemId);
 
-        var newQuantity = Math.max((inventoryItem.getCurrentQuantity() + adjustment), 0);
+        int newQuantity = inventoryItem.getCurrentQuantity() + adjustment;
+
+        if (newQuantity < 0) throw new InsufficientStockException("Ajuste de estoque não pode resultar em quantidade negativa. Estoque atual do item %s: %d".formatted(inventoryItem.getProduct().getName(), inventoryItem.getCurrentQuantity()));
+
         var newItem = inventoryItem.toBuilder().currentQuantity(newQuantity).build();
         var updatedItem = inventoryItemRepository.save(newItem);
 
@@ -217,10 +222,10 @@ public class InventoryItemService {
     }
 
     /**
-    * Verifica se o estoque do item está baixo e envia um e-mail de notificação se necessário.
-    *
-    * @param item o item de inventário a ser verificado
-    */
+     * Verifica se o estoque do item está baixo e envia um e-mail de notificação se necessário.
+     *
+     * @param item o item de inventário a ser verificado
+     */
     private void sendEmailIfLowStock(InventoryItem item) {
         if (isLowStock(item)) {
             String emailBody = emailService.createEmailBody(item.getInventory().getName(), item.getProduct().getName(), item.getCurrentQuantity());
