@@ -39,12 +39,11 @@ public class AuthenticationService {
         if (this.existsByEmail(userData.email())) throw new UserAlreadyRegisteredException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
 
         String encryptedPassword = passwordEncoder.encode(userData.password());
-        Set<Role> roles = Set.of(Role.ROLE_USER);
 
         var authUser = AuthUser.builder()
                 .email(userData.email())
                 .hashPassword(encryptedPassword)
-                .roles(roles)
+                .roles(Set.of(Role.ROLE_USER))
                 .build();
 
         AuthUser savedUser = authUserRepository.save(authUser);
