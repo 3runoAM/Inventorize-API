@@ -6,7 +6,9 @@ import edu.infnet.InventorizeAPI.dto.response.UserResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.enums.Role;
 import edu.infnet.InventorizeAPI.exceptions.custom.UserAlreadyRegisteredException;
+import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException;
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
+import edu.infnet.InventorizeAPI.security.auth.UserDetailsImpl;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -84,15 +91,88 @@ public class AuthenticationServiceTest {
 
     @Test
     public void shouldThrowUserAlreadyRegisteredExceptionWhenEmailExists() {
-        var userData = mockedAuthenticationRequest();
+        var authenticationRequestDTO = mockedAuthenticationRequest();
 
-        when(authUserRepository.existsByEmail(userData.email())).thenReturn(true);
+        when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(true);
 
         var userRegisteredException = assertThrows(UserAlreadyRegisteredException.class, () -> {
-            authenticationService.register(userData);
+            authenticationService.register(authenticationRequestDTO);
         }, "Deve lançar UserAlreadyRegisteredException quando o email já estiver cadastrado");
 
-        assertEquals(userRegisteredException.getMessage(), String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
+        assertEquals(userRegisteredException.getMessage(), String.format("[ EMAIL: %s ] já cadastrado", authenticationRequestDTO.email()));
+    }
+
+    @Test
+    public void shouldAuthenticateUserAndReturnToken() {
+        var authenticationRequestDTO = mockedAuthenticationRequest();
+        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+
+        var userDetails = UserDetailsImpl.builder()
+                .authUser(mockedSavedUser)
+                .build();
+        var jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSJ9";
+        var authentication = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
+        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedSavedUser));
+
+        var authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
+
+        assertEquals(jwtToken, authenticationResponseDTO.token(), "O token retornado deve ser igual ao esperado");
+        assertEquals(authenticationRequestDTO.email(), authenticationResponseDTO.email(), "O email retornado deve corresponder ao da requisição");
+        assertEquals(mockedSavedUser.getId(), authenticationResponseDTO.userId(), "O ID do usuário retornado deve ser igual ao esperado");
+    }
+
+    @Test
+    public void shouldCallCorrectMethodsWhenAuthenticatingUser() {
+        var authenticationRequestDTO = mockedAuthenticationRequest();
+        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+
+        var userDetails = UserDetailsImpl.builder()
+                .authUser(mockedSavedUser)
+                .build();
+        var jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSJ9";
+        var authentication = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
+        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedSavedUser));
+
+        authenticationService.authenticate(authenticationRequestDTO);
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(authentication).getPrincipal();
+        verify(tokenService).generateToken(any(UserDetails.class));
+        verify(authUserRepository).findByEmail(authenticationRequestDTO.email());
+        verifyNoMoreInteractions(authenticationManager, tokenService, authUserRepository);
+    }
+
+    @Test
+    public void shouldGetAuthenticatedUser() {
+        var mockedAuthUser = mockedAuthUser("authenticatedUser@email.com");
+        var authentication = mock(Authentication.class);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getPrincipal()).thenReturn(mockedAuthUser);
+
+        AuthUser authenticatedUser = authenticationService.getAuthenticatedUser();
+
+        assertEquals(mockedAuthUser.getId(), authenticatedUser.getId(), "O ID do usuário autenticado deve ser igual ao esperado");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenNoUserIsAuthenticated() {
+        var authentication = mock(Authentication.class);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getPrincipal()).thenReturn(null);
+
+        assertThrows(UserNotAuthenticatedException.class, () -> {
+            authenticationService.getAuthenticatedUser();
+        });
     }
 
     // Métodos auxiliares -----------------------
