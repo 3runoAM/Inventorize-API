@@ -12,7 +12,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Builder(toBuilder = true)
-@ToString(exclude = "inventoryItems")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends AuditableEntity {
@@ -27,9 +26,6 @@ public class Product extends AuditableEntity {
 
     @Column(length = 100)
     private String supplierCode;
-
-    @OneToMany(mappedBy = "product")
-    private List<InventoryItem> inventoryItems;
 
     @NotNull
     @ManyToOne

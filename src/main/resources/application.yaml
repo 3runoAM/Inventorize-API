@@ -2,7 +2,7 @@ spring:
   application:
     name: InventorizeAPI
   profiles:
-    active: test
+    active: "test"
   # Configuração do Spring Mail
   mail:
     host: smtp.gmail.com

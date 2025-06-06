@@ -35,11 +35,13 @@ public class ProductService {
                     productData.name(), productData.supplierCode()));
         }
 
-        var product = Product.builder()
+        var newProduct = Product.builder()
                 .name(productData.name())
-                .supplierCode(productData.supplierCode());
+                .supplierCode(productData.supplierCode())
+                .owner(authService.getAuthenticatedUser())
+                .build();
 
-        var savedProduct = productRepository.save(product.build());
+        var savedProduct = productRepository.save(newProduct);
 
         return ProductResponseDTO.fromProduct(savedProduct);
     }
