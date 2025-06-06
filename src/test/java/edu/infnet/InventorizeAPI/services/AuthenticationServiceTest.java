@@ -2,7 +2,6 @@ package edu.infnet.InventorizeAPI.services;
 
 
 import edu.infnet.InventorizeAPI.dto.request.AuthenticationRequestDTO;
-import edu.infnet.InventorizeAPI.dto.response.UserResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.enums.Role;
 import edu.infnet.InventorizeAPI.exceptions.custom.UserAlreadyRegisteredException;
@@ -53,31 +52,31 @@ public class AuthenticationServiceTest {
     @Test
     public void shouldAssertCorrectUserDataWhenRegistering() {
         var authenticationRequestDTO = mockedAuthenticationRequest();
-        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+        var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
         var userCaptor = getUserCaptor();
 
         when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
-        when(passwordEncoder.encode(authenticationRequestDTO.password())).thenReturn(mockedSavedUser.getHashPassword());
-        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedSavedUser);
+        when(passwordEncoder.encode(authenticationRequestDTO.password())).thenReturn(mockedUser.getHashPassword());
+        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
 
-        UserResponseDTO userResponseDTO = authenticationService.register(authenticationRequestDTO);
+        var userResponseDTO = authenticationService.register(authenticationRequestDTO);
 
         verify(authUserRepository).save(userCaptor.capture());
 
-        var capturedUser = userCaptor.getValue();
+        var savedUser = userCaptor.getValue();
 
-        assertEquals(mockedSavedUser.getId(), userResponseDTO.id(), "O id do usuário registrado deve ser igual ao esperado");
-        assertEquals(capturedUser.getEmail(), userResponseDTO.email(), "O email do usuário registrado deve ser igual ao esperado");
-        assertEquals(mockedSavedUser.getHashPassword(), capturedUser.getHashPassword(), "A senha criptografada do usuário registrado deve ser igual à esperada");
-        assertEquals(mockedSavedUser.getRoles(), capturedUser.getRoles(), "Os papéis do usuário registrado devem ser iguais aos esperados");
+        assertEquals(mockedUser.getId(), userResponseDTO.id(), "O id do usuário retornado deve permanecer o mesmo");
+        assertEquals(savedUser.getEmail(), userResponseDTO.email(), "O email do usuário retornado deve ser do usuário salvo");
+        assertEquals(savedUser.getHashPassword(), mockedUser.getHashPassword(), "A senha criptografada do usuário salvo deve permanecer igual");
+        assertEquals(savedUser.getRoles(), mockedUser.getRoles(), "As autorizações do usuário salvo devem se manter iguais");
     }
 
     @Test
     public void shouldCallCorrectMethodsWhenRegisteringUser() {
         var authenticationRequestDTO = mockedAuthenticationRequest();
-        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+        var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
 
-        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedSavedUser);
+        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
         when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
         when(passwordEncoder.encode(authenticationRequestDTO.password())).thenReturn("$2a$10$eImiTMZG4ELQ2Z8z5y3jOe");
 
@@ -105,10 +104,10 @@ public class AuthenticationServiceTest {
     @Test
     public void shouldAuthenticateUserAndReturnToken() {
         var authenticationRequestDTO = mockedAuthenticationRequest();
-        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+        var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
 
         var userDetails = UserDetailsImpl.builder()
-                .authUser(mockedSavedUser)
+                .authUser(mockedUser)
                 .build();
         var jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSJ9";
         var authentication = mock(Authentication.class);
@@ -116,22 +115,22 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedSavedUser));
+        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         var authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
 
         assertEquals(jwtToken, authenticationResponseDTO.token(), "O token retornado deve ser igual ao esperado");
         assertEquals(authenticationRequestDTO.email(), authenticationResponseDTO.email(), "O email retornado deve corresponder ao da requisição");
-        assertEquals(mockedSavedUser.getId(), authenticationResponseDTO.userId(), "O ID do usuário retornado deve ser igual ao esperado");
+        assertEquals(mockedUser.getId(), authenticationResponseDTO.userId(), "O ID do usuário retornado deve ser igual ao esperado");
     }
 
     @Test
     public void shouldCallCorrectMethodsWhenAuthenticatingUser() {
         var authenticationRequestDTO = mockedAuthenticationRequest();
-        var mockedSavedUser = mockedAuthUser(authenticationRequestDTO.email());
+        var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
 
         var userDetails = UserDetailsImpl.builder()
-                .authUser(mockedSavedUser)
+                .authUser(mockedUser)
                 .build();
         var jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSJ9";
         var authentication = mock(Authentication.class);
@@ -139,7 +138,7 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedSavedUser));
+        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         authenticationService.authenticate(authenticationRequestDTO);
 
@@ -158,7 +157,7 @@ public class AuthenticationServiceTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         when(authentication.getPrincipal()).thenReturn(mockedAuthUser);
 
-        AuthUser authenticatedUser = authenticationService.getAuthenticatedUser();
+        var authenticatedUser = authenticationService.getAuthenticatedUser();
 
         assertEquals(mockedAuthUser.getId(), authenticatedUser.getId(), "O ID do usuário autenticado deve ser igual ao esperado");
     }

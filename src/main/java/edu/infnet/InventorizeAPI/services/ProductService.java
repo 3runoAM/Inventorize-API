@@ -1,7 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
-import edu.infnet.InventorizeAPI.dto.request.PatchProductDTO;
-import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
@@ -35,11 +36,13 @@ public class ProductService {
                     productData.name(), productData.supplierCode()));
         }
 
-        var product = Product.builder()
+        var newProduct = Product.builder()
                 .name(productData.name())
-                .supplierCode(productData.supplierCode());
+                .supplierCode(productData.supplierCode())
+                .owner(authService.getAuthenticatedUser())
+                .build();
 
-        var savedProduct = productRepository.save(product.build());
+        var savedProduct = productRepository.save(newProduct);
 
         return ProductResponseDTO.fromProduct(savedProduct);
     }
@@ -87,13 +90,13 @@ public class ProductService {
      * @return informações do produto atualizado
      */
     @Transactional
-    public ProductResponseDTO putProduct(UUID productId, ProductRequestDTO productData) {
+    public ProductResponseDTO updateProduct(UUID productId, PutProductDTO productData) {
         Product product = validateOwnershipById(productId);
 
         var productBuilder = product.toBuilder()
                 .id(productId)
-                .name(productData.name())
-                .supplierCode(productData.supplierCode())
+                .name(productData.newName())
+                .supplierCode(productData.newSupplierCode())
                 .build();
 
         var updatedProduct = productRepository.save(productBuilder);

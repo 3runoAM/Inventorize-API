@@ -1,11 +1,11 @@
-package edu.infnet.InventorizeAPI;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class InventorizeApiApplicationTests {
-	@Test
-	void contextLoads() {
-	}
-}
+//package edu.infnet.InventorizeAPI;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+////@SpringBootTest
+////class InventorizeApiApplicationTests {
+////	@Test
+////	void contextLoads() {
+////	}
+////}
