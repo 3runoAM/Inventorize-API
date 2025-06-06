@@ -1,6 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
-import edu.infnet.InventorizeAPI.dto.request.ProductRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
@@ -36,6 +38,7 @@ public class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
+
     // TESTES DE CRIAÇÃO DE PRODUTO -----------------------------------------------------------------------------------
     @Test
     public void shouldReturnCorrectProductDataWhenCreating() {
@@ -59,10 +62,12 @@ public class ProductServiceTest {
     @Test
     public void savedProductShouldHaveRightData() {
         var productRequestDto = mockedProductRequest();
+
         var mockedProduct = mockedProduct();
         var mockedUser = mockedUser();
         var authentication = mock(Authentication.class);
-        var productCaptor = getArgumentCaptor();
+
+        var productCaptor = getProductCaptor();
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -86,9 +91,7 @@ public class ProductServiceTest {
 
         when(productRepository.existsByNameAndSupplierCode(productRequestDto.name(), productRequestDto.supplierCode())).thenReturn(true);
 
-        var ProductAlreadyExistsException = assertThrows(ProductAlreadyExistsException.class, () -> {
-            productService.createProduct(productRequestDto);
-        });
+        var ProductAlreadyExistsException = assertThrows(ProductAlreadyExistsException.class, () -> productService.createProduct(productRequestDto));
         assertEquals(
                 String.format("Já existe um produto cadastrado com: [Nome: %s] e [Código de Fornecedor: %s]", productRequestDto.name(), productRequestDto.supplierCode()),
                 ProductAlreadyExistsException.getMessage()
@@ -138,9 +141,7 @@ public class ProductServiceTest {
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        var productNotFoundException = assertThrows(ProductNotFoundException.class, () -> {
-            productService.validateOwnershipById(productId);
-        });
+        var productNotFoundException = assertThrows(ProductNotFoundException.class, () -> productService.validateOwnershipById(productId));
         assertEquals(
                 String.format("Produto com o [ ID: %s ] não encontrado", productId),
                 productNotFoundException.getMessage()
@@ -157,9 +158,7 @@ public class ProductServiceTest {
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         when(authenticationService.getAuthenticatedUser()).thenReturn(unauthorizedUser);
 
-        assertThrows(UnauthorizedRequestException.class, () -> {
-            productService.validateOwnershipById(product.getId());
-        });
+        assertThrows(UnauthorizedRequestException.class, () -> productService.validateOwnershipById(product.getId()));
     }
 
     @Test
@@ -207,11 +206,11 @@ public class ProductServiceTest {
 
         assertEquals(productResponseDTOList.size(), mockedProductList.size(), "O tamanho da lista de produtos retornada deve ser igual ao tamanho da lista mockada");
         for (int i = 0; i < mockedProductList.size(); i++) {
-           assertEquals(
-                   productResponseDTOList.get(i),
-                   ProductResponseDTO.fromProduct(mockedProductList.get(i)),
-                   "O produto retornado na posição " + i + " deve ser igual ao produto mockado na mesma posição"
-           );
+            assertEquals(
+                    productResponseDTOList.get(i),
+                    ProductResponseDTO.fromProduct(mockedProductList.get(i)),
+                    "O produto retornado na posição " + i + " deve ser igual ao produto mockado na mesma posição"
+            );
         }
     }
 
@@ -246,7 +245,158 @@ public class ProductServiceTest {
         verify(productRepository).delete(product);
     }
 
+    // TESTES DE ATUALIZAÇÃO DE PRODUTO -------------------------------------------------------------------------------
+    @Test
+    public void shouldReturnCorrectResponseToUpdateProduct() {
+        var putProductDTO = mockedPutProductDTO();
+        var mockedProduct = mockedProduct();
+        var user = mockedUser();
+        var updatedProduct = mockedProduct.toBuilder()
+                .name(putProductDTO.newName())
+                .supplierCode(putProductDTO.newSupplierCode())
+                .build();
+
+        when(productRepository.findById(mockedProduct.getId())).thenReturn(Optional.of(mockedProduct));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        var productResponseDTO = productService.updateProduct(mockedProduct.getId(), putProductDTO);
+
+        assertEquals(productResponseDTO.productId(), mockedProduct.getId());
+        assertEquals(productResponseDTO.ownerId(), user.getId());
+        assertEquals(productResponseDTO.name(), updatedProduct.getName());
+        assertEquals(productResponseDTO.supplierCode(), updatedProduct.getSupplierCode());
+    }
+
+    @Test
+    public void savedProductShouldHaveCorrectData() {
+        var putProductDTO = mockedPutProductDTO();
+        var mockedProduct = mockedProduct();
+        var user = mockedUser();
+        var updatedProduct = mockedProduct.toBuilder()
+                .name(putProductDTO.newName())
+                .supplierCode(putProductDTO.newSupplierCode())
+                .build();
+        var productCaptor = getProductCaptor();
+
+        when(productRepository.findById(mockedProduct.getId())).thenReturn(Optional.of(mockedProduct));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        productService.updateProduct(mockedProduct.getId(), putProductDTO);
+
+        verify(productRepository).save(productCaptor.capture());
+        var savedProduct = productCaptor.getValue();
+
+        assertEquals(savedProduct.getId(), mockedProduct.getId());
+        assertEquals(savedProduct.getOwner().getId(), user.getId());
+        assertEquals(savedProduct.getName(), updatedProduct.getName());
+        assertEquals(savedProduct.getSupplierCode(), updatedProduct.getSupplierCode());
+    }
+
+    @Test
+    public void shouldCallCorrectMethodsToUpdateProduct() {
+        var putProductDTO = mockedPutProductDTO();
+        var mockedProduct = mockedProduct();
+        var user = mockedUser();
+        var updatedProduct = mockedProduct.toBuilder()
+                .name(putProductDTO.newName())
+                .supplierCode(putProductDTO.newSupplierCode())
+                .build();
+
+        when(productRepository.findById(mockedProduct.getId())).thenReturn(Optional.of(mockedProduct));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        productService.updateProduct(mockedProduct.getId(), putProductDTO);
+
+        verify(productRepository).findById(mockedProduct.getId());
+        verify(authenticationService).getAuthenticatedUser();
+        verify(productRepository).save(any(Product.class));
+        verifyNoMoreInteractions(productRepository, authenticationService);
+    }
+
+    @Test
+    public void shouldPatchNameCorrectly() {
+        var mockedProduct = mockedProduct();
+        var user = mockedUser();
+
+        var newName = "ProductABC";
+        var patchNameDTO = new PatchProductDTO(newName, null);
+        var updatedProduct = mockedProduct.toBuilder()
+                .name(newName)
+                .build();
+
+        var captor = getProductCaptor();
+
+        when(productRepository.findById(mockedProduct.getId())).thenReturn(Optional.of(mockedProduct));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        productService.patchProduct(mockedProduct.getId(), patchNameDTO);
+
+        verify(productRepository).save(captor.capture());
+        var savedProduct = captor.getValue();
+
+        assertEquals(mockedProduct.getId(), savedProduct.getId(), "O ID do produto salvo deve ser o mesmo do produto mockado");
+        assertEquals(user.getId(), savedProduct.getOwner().getId(), "O dono do produto salvo deve ser o usuário autenticado");
+        assertEquals(newName, savedProduct.getName(), "O nome do produto salvo deve ser atualizado corretamente");
+        assertEquals(savedProduct.getSupplierCode(), mockedProduct.getSupplierCode(), "O código de fornecedor do produto salvo deve permanecer o mesmo");
+    }
+
+    @Test
+    public void shouldPatchSupplierCodeCorrectly() {
+        var product = mockedProduct();
+        var user = mockedUser();
+
+        var newSupplierCode = "URB123";
+        var updatedProduct = product.toBuilder()
+                .supplierCode(newSupplierCode)
+                .build();
+
+        var captor = getProductCaptor();
+
+        var patchSupplierCodeDTO = new PatchProductDTO(null, newSupplierCode);
+
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        var productResponseDTO = productService.patchProduct(product.getId(), patchSupplierCodeDTO);
+
+        verify(productRepository).save(captor.capture());
+        var savedProduct = captor.getValue();
+
+        assertEquals(product.getId(), savedProduct.getId(), "O ID do produto salvo deve ser o mesmo do produto mockado");
+        assertEquals(user.getId(), savedProduct.getOwner().getId(), "O dono do produto salvo deve ser o usuário autenticado");
+        assertEquals(newSupplierCode, savedProduct.getSupplierCode(), "O código de fornecedor do produto salvo deve ser atualizado corretamente");
+        assertEquals(savedProduct.getName(), product.getName(), "O nome do produto salvo deve permanecer o mesmo");
+    }
+
+    @Test
+    public void shouldCallCorrectMethodsToPatchProduct() {
+        var product = mockedProduct();
+        var user = mockedUser();
+        var patchProductDTO = new PatchProductDTO("NovoNome", "NovoFornecedor");
+        var updatedProduct = product.toBuilder()
+                .name(patchProductDTO.name())
+                .supplierCode(patchProductDTO.supplierCode())
+                .build();
+
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        productService.patchProduct(product.getId(), patchProductDTO);
+
+        verify(productRepository).findById(product.getId());
+        verify(authenticationService).getAuthenticatedUser();
+        verify(productRepository).save(any(Product.class));
+        verifyNoMoreInteractions(productRepository, authenticationService);
+    }
+
     // MÉTODOS UTILITÁRIOS ---------------------------------------------------------------------------------------------
+
     private ProductRequestDTO mockedProductRequest() {
         return new ProductRequestDTO("ProductB", "BRU123");
     }
@@ -269,7 +419,7 @@ public class ProductServiceTest {
                 .build();
     }
 
-    private ArgumentCaptor<Product> getArgumentCaptor() {
+    private ArgumentCaptor<Product> getProductCaptor() {
         return ArgumentCaptor.forClass(Product.class);
     }
 
@@ -285,5 +435,9 @@ public class ProductServiceTest {
             );
         }
         return productList;
+    }
+
+    private PutProductDTO mockedPutProductDTO() {
+        return new PutProductDTO("UpdatedProduct", "BRU12345");
     }
 }
