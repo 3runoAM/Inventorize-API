@@ -1,4 +1,4 @@
-package edu.infnet.InventorizeAPI.dto.request;
+package edu.infnet.InventorizeAPI.dto.request.inventory;
 
 import jakarta.validation.constraints.Email;
 import org.hibernate.validator.constraints.Length;

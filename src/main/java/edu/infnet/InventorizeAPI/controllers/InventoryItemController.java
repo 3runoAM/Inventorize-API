@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.controllers;
 
-import edu.infnet.InventorizeAPI.dto.request.ItemRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.PatchItemRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.UpdateItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventoryItem.ItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventoryItem.PatchItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventoryItem.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.services.InventoryItemService;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class InventoryItemController {
      * @return informações do item criado
      */
     @PostMapping
-    public ResponseEntity<ItemResponseDTO> createInventoryItem(@Valid @RequestBody ItemRequestDTO itemRequest) {
+    public ResponseEntity<ItemResponseDTO> createInventoryItem(@Valid @RequestBody ItemDTO itemRequest) {
         ItemResponseDTO inventoryItemInfo = inventoryItemService.create(itemRequest);
 
         return ResponseEntity.ok(inventoryItemInfo);
@@ -94,7 +94,7 @@ public class InventoryItemController {
      * @return informações do item atualizado
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> patchInventoryItem(@PathVariable UUID id, @Valid @RequestBody PatchItemRequestDTO itemRequest) {
+    public ResponseEntity<ItemResponseDTO> patchInventoryItem(@PathVariable UUID id, @Valid @RequestBody PatchItemDTO itemRequest) {
         ItemResponseDTO patchedItem = inventoryItemService.patch(id, itemRequest);
 
         return ResponseEntity.ok(patchedItem);

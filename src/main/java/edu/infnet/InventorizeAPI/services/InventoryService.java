@@ -1,7 +1,7 @@
 package edu.infnet.InventorizeAPI.services;
 
-import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.PatchInventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.InventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.PatchInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Inventory;
@@ -24,14 +24,14 @@ public class InventoryService {
     /**
      * Cria um novo inventário.
      *
-     * @param inventoryRequestDTO dados do inventário a ser criado
+     * @param inventoryDTO dados do inventário a ser criado
      * @return informações do inventário criado
      */
-    public InventoryResponseDTO createInventory(InventoryRequestDTO inventoryRequestDTO) {
+    public InventoryResponseDTO createInventory(InventoryDTO inventoryDTO) {
         var newInventory = Inventory.builder()
-                .name(inventoryRequestDTO.name())
-                .description(inventoryRequestDTO.description())
-                .notificationEmail(inventoryRequestDTO.notificationEmail())
+                .name(inventoryDTO.name())
+                .description(inventoryDTO.description())
+                .notificationEmail(inventoryDTO.notificationEmail())
                 .owner(authenticationService.getAuthenticatedUser())
                 .build();
 
@@ -91,19 +91,19 @@ public class InventoryService {
      * Atualiza um inventário existente.
      *
      * @param id identificador do inventário a ser atualizado
-     * @param inventoryRequestDTO dados atualizados do inventário
+     * @param inventoryDTO dados atualizados do inventário
      * @return informações do inventário atualizado
      */
     @Transactional
-    public InventoryResponseDTO update(UUID id, InventoryRequestDTO inventoryRequestDTO) {
+    public InventoryResponseDTO update(UUID id, InventoryDTO inventoryDTO) {
         Inventory inventory = validateOwnershipById(id);
 
         var newInventory = Inventory.builder()
                 .id(id)
                 .owner(inventory.getOwner())
-                .name(inventoryRequestDTO.name())
-                .notificationEmail(inventoryRequestDTO.notificationEmail())
-                .description(inventoryRequestDTO.description())
+                .name(inventoryDTO.name())
+                .notificationEmail(inventoryDTO.notificationEmail())
+                .description(inventoryDTO.description())
                 .build();
 
         var savedInventory = inventoryRepository.save(newInventory);

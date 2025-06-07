@@ -1,10 +1,13 @@
-package edu.infnet.InventorizeAPI.dto.request;
+package edu.infnet.InventorizeAPI.dto.request.inventoryItem;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-public record UpdateItemDTO(
+import java.util.UUID;
+
+public record ItemDTO(
+        @NotNull UUID productId,
+        @NotNull UUID inventoryId,
         @NotNull @PositiveOrZero int currentQuantity,
         @NotNull @PositiveOrZero int minimumStockLevel
-) {
-}
+) {}

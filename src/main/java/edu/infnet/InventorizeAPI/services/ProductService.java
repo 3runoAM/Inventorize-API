@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.UpdateProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
@@ -30,7 +30,7 @@ public class ProductService {
      * @param productData dados do produto a ser criado
      * @return informações do produto criado
      */
-    public ProductResponseDTO createProduct(ProductRequestDTO productData) {
+    public ProductResponseDTO createProduct(ProductDTO productData) {
         if (productRepository.existsByNameAndSupplierCode(productData.name(), productData.supplierCode())){
             throw new ProductAlreadyExistsException(String.format("Já existe um produto cadastrado com: [Nome: %s] e [Código de Fornecedor: %s]",
                     productData.name(), productData.supplierCode()));
@@ -90,7 +90,7 @@ public class ProductService {
      * @return informações do produto atualizado
      */
     @Transactional
-    public ProductResponseDTO updateProduct(UUID productId, PutProductDTO productData) {
+    public ProductResponseDTO updateProduct(UUID productId, UpdateProductDTO productData) {
         Product product = validateOwnershipById(productId);
 
         var productBuilder = product.toBuilder()

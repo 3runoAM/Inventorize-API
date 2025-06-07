@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.UpdateProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
@@ -397,8 +397,8 @@ public class ProductServiceTest {
 
     // MÉTODOS UTILITÁRIOS ---------------------------------------------------------------------------------------------
 
-    private ProductRequestDTO mockedProductRequest() {
-        return new ProductRequestDTO("ProductB", "BRU123");
+    private ProductDTO mockedProductRequest() {
+        return new ProductDTO("ProductB", "BRU123");
     }
 
     private Product mockedProduct() {
@@ -437,7 +437,7 @@ public class ProductServiceTest {
         return productList;
     }
 
-    private PutProductDTO mockedPutProductDTO() {
-        return new PutProductDTO("UpdatedProduct", "BRU12345");
+    private UpdateProductDTO mockedPutProductDTO() {
+        return new UpdateProductDTO("UpdatedProduct", "BRU12345");
     }
 }
