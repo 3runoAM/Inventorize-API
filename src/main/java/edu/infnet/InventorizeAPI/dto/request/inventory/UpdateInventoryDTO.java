@@ -11,8 +11,8 @@ public record UpdateInventoryDTO(
         @NotNull @Length(max = 200) String description,
         @NotBlank @Email String notificationEmail
 ) {
-    public static InventoryDTO from(Inventory inventory) {
-        return new InventoryDTO(
+    public static UpdateInventoryDTO from(Inventory inventory) {
+        return new UpdateInventoryDTO(
                 inventory.getName(),
                 inventory.getDescription(),
                 inventory.getNotificationEmail()
