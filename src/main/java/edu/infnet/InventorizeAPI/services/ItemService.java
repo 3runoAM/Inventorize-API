@@ -8,7 +8,7 @@ import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.entities.*;
 import edu.infnet.InventorizeAPI.exceptions.custom.InsufficientStockException;
 import edu.infnet.InventorizeAPI.exceptions.custom.InventoryItemNotFound;
-import edu.infnet.InventorizeAPI.repository.InventoryItemRepository;
+import edu.infnet.InventorizeAPI.repository.ItemRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class ItemService {
     private final EmailService emailService;
     private final ProductService productService;
     private final InventoryService inventoryService;
-    private final InventoryItemRepository inventoryItemRepository;
+    private final ItemRepository itemRepository;
 
     /**
      * Cria um novo item de inventário.
@@ -43,7 +43,7 @@ public class ItemService {
                 .minimumStockLevel(itemRequest.minimumStockLevel())
                 .build();
 
-        var savedInventoryItem = inventoryItemRepository.save(newInventoryItem);
+        var savedInventoryItem = itemRepository.save(newInventoryItem);
 
         return ItemResponseDTO.from(savedInventoryItem);
     }
@@ -71,7 +71,7 @@ public class ItemService {
                 .map(InventoryResponseDTO::id)
                 .toList();
 
-        return inventoryItemRepository.getAllByInventoryIdIn(inventoryIds)
+        return itemRepository.getAllItemsByInventoryIdIn(inventoryIds)
                 .stream()
                 .map(ItemResponseDTO::from)
                 .toList();
@@ -83,12 +83,14 @@ public class ItemService {
      * @param inventoryId identificador do inventário
      * @return lista de itens de inventário
      */
-    public List<ItemResponseDTO> getAllByInventoryId(UUID inventoryId) {
+    public List<ItemResponseDTO> getAllItemsByInventoryId(UUID inventoryId) {
         inventoryService.validateOwnershipById(inventoryId);
 
-        List<Item> items = inventoryItemRepository.getAllByInventoryId(inventoryId);
+        List<Item> items = itemRepository.getAllItemsByInventoryId(inventoryId);
 
-        return items.stream().map(ItemResponseDTO::from).toList();
+        return items.stream()
+                .map(ItemResponseDTO::from)
+                .toList();
     }
 
     /**
@@ -98,7 +100,7 @@ public class ItemService {
      * @param itemRequest dados do item a ser atualizado
      * @return informações do item atualizado
      */
-    public ItemResponseDTO update(UUID id, @Valid UpdateItemDTO itemRequest) {
+    public ItemResponseDTO update(UUID id, UpdateItemDTO itemRequest) {
         Item item = validateOwnershipById(id);
 
         var updatedItem = item.toBuilder()
@@ -106,7 +108,7 @@ public class ItemService {
                 .minimumStockLevel(itemRequest.minimumStockLevel())
                 .build();
 
-        var savedItem = inventoryItemRepository.save(updatedItem);
+        var savedItem = itemRepository.save(updatedItem);
 
         return ItemResponseDTO.from(savedItem);
     }
@@ -118,18 +120,15 @@ public class ItemService {
      * @param itemRequest dados do item a ser atualizado
      * @return informações do item atualizado
      */
-    public ItemResponseDTO patch(UUID id, @Valid PatchItemDTO itemRequest) {
+    public ItemResponseDTO patch(UUID id, PatchItemDTO itemRequest) {
         Item item = validateOwnershipById(id);
 
         var itemBuilder = item.toBuilder();
         if (itemRequest.currentQuantity() != null) itemBuilder.currentQuantity(itemRequest.currentQuantity());
         if (itemRequest.minimumStockLevel() != null) itemBuilder.minimumStockLevel(itemRequest.minimumStockLevel());
 
-        itemBuilder.product(item.getProduct());
-        itemBuilder.inventory(item.getInventory());
-
         var updatedItem = itemBuilder.build();
-        var savedItem = inventoryItemRepository.save(updatedItem);
+        var savedItem = itemRepository.save(updatedItem);
 
         return ItemResponseDTO.from(savedItem);
     }
@@ -141,7 +140,7 @@ public class ItemService {
      */
     public void deleteById(UUID id) {
         Item item = validateOwnershipById(id);
-        inventoryItemRepository.delete(item);
+        itemRepository.delete(item);
     }
 
     /**
@@ -149,19 +148,24 @@ public class ItemService {
      *
      * @param itemId     identificador do item
      * @param adjustment valor a ser ajustado (positivo ou negativo)
-     * @throws InsufficientStockException se o ajuste resultar em quantidade negativa
      * @return informações do item atualizado
+     * @throws InsufficientStockException se o ajuste resultar em quantidade negativa
      */
     @Transactional
     public ItemResponseDTO adjustCurrentQuantity(UUID itemId, int adjustment) {
-        var inventoryItem = validateOwnershipWithLock(itemId);
+        var item = validateOwnershipWithLock(itemId);
 
-        int newQuantity = inventoryItem.getCurrentQuantity() + adjustment;
+        int newQuantity = item.getCurrentQuantity() + adjustment;
 
-        if (newQuantity < 0) throw new InsufficientStockException("Ajuste de estoque não pode resultar em quantidade negativa. Estoque atual do item %s: %d".formatted(inventoryItem.getProduct().getName(), inventoryItem.getCurrentQuantity()));
+        if (newQuantity < 0) {
+            throw new InsufficientStockException("Ajuste de estoque não pode resultar em quantidade negativa. Estoque atual do item %s: %d".formatted(item.getProduct().getName(), item.getCurrentQuantity()));
+        }
 
-        var newItem = inventoryItem.toBuilder().currentQuantity(newQuantity).build();
-        var updatedItem = inventoryItemRepository.save(newItem);
+        var newItem = item.toBuilder()
+                .currentQuantity(newQuantity)
+                .build();
+
+        var updatedItem = itemRepository.save(newItem);
 
         sendEmailIfLowStock(updatedItem);
 
@@ -174,8 +178,9 @@ public class ItemService {
      * @param inventoryItemId identificador do item de inventário
      * @return InventoryItem validado
      */
-    private Item validateOwnershipById(UUID inventoryItemId) {
-        var inventoryItem = findById(inventoryItemId);
+    protected Item validateOwnershipById(UUID inventoryItemId) {
+        var inventoryItem = itemRepository.findById(inventoryItemId)
+                .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
 
         inventoryService.validateOwnershipById(inventoryItem.getInventory().getId());
         productService.validateOwnershipById(inventoryItem.getProduct().getId());
@@ -184,23 +189,12 @@ public class ItemService {
     }
 
     /**
-     * Busca um item de inventário pelo seu ID
-     *
-     * @param inventoryItemId identificador do item de inventário
-     * @return InventoryItem encontrado
-     */
-    private Item findById(UUID inventoryItemId) {
-        return inventoryItemRepository.findById(inventoryItemId)
-                .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
-    }
-
-    /**
      * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item, com bloqueio para evitar concorrência.
      *
      * @param inventoryItemId identificador do item de inventário
      * @return InventoryItem validado com bloqueio
      */
-    private Item validateOwnershipWithLock(UUID inventoryItemId) {
+    protected Item validateOwnershipWithLock(UUID inventoryItemId) {
         var inventoryItem = findByIdWithLock(inventoryItemId);
 
         inventoryService.validateOwnershipById(inventoryItem.getInventory().getId());
@@ -217,7 +211,7 @@ public class ItemService {
      * @throws InventoryItemNotFound se o item não for encontrado
      */
     private Item findByIdWithLock(UUID inventoryItemId) {
-        return inventoryItemRepository.findItemById(inventoryItemId)
+        return itemRepository.findItemById(inventoryItemId)
                 .orElseThrow(() -> new InventoryItemNotFound("Item de inventário com o [ ID: %s ] não encontrado".formatted(inventoryItemId)));
     }
 
@@ -228,7 +222,12 @@ public class ItemService {
      */
     private void sendEmailIfLowStock(Item item) {
         if (isLowStock(item)) {
-            String emailBody = emailService.createEmailBody(item.getInventory().getName(), item.getProduct().getName(), item.getCurrentQuantity());
+            String emailBody = emailService.createEmailBody(
+                    item.getInventory().getName(),
+                    item.getProduct().getName(),
+                    item.getCurrentQuantity()
+            );
+
             emailService.sendEmail(item.getInventory().getNotificationEmail(), emailBody);
         }
     }
