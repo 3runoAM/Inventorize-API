@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     @Value("${jwt.secret}")
-    String secretKey;
+    private String secretKey;
 
     private
     SecretKey getSecretKey() {
