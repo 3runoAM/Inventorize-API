@@ -40,7 +40,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    void shouldCreateEmailBodyWithValidParameters() {
+    public void shouldCreateEmailBodyWithValidParameters() {
         var inventoryName = "Test Inventory";
         var itemName = "Test Item";
         var quantity = 5;
