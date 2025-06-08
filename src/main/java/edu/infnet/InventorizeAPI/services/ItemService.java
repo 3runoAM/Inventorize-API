@@ -10,7 +10,6 @@ import edu.infnet.InventorizeAPI.exceptions.custom.InsufficientStockException;
 import edu.infnet.InventorizeAPI.exceptions.custom.InventoryItemNotFound;
 import edu.infnet.InventorizeAPI.repository.ItemRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
