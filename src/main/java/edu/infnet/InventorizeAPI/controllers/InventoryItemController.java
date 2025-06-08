@@ -67,7 +67,7 @@ public class InventoryItemController {
      */
     @GetMapping("/inventory/{inventoryId}")
     public ResponseEntity<List<ItemResponseDTO>> getAllByInventory(@PathVariable UUID inventoryId) {
-        List<ItemResponseDTO> items = itemService.getAllByInventoryId(inventoryId);
+        List<ItemResponseDTO> items = itemService.getAllItemsByInventoryId(inventoryId);
 
         return ResponseEntity.ok(items);
     }

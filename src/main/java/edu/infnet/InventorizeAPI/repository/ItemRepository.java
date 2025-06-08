@@ -12,9 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface InventoryItemRepository extends JpaRepository<Item, UUID> {
-    List<Item> getAllByInventoryId(UUID inventoryId);
-    List<Item> getAllByInventoryIdIn(List<UUID> inventoryIds);
+public interface ItemRepository extends JpaRepository<Item, UUID> {
+    List<Item> getAllItemsByInventoryId(UUID inventoryId);
+    List<Item> getAllItemsByInventoryIdIn(List<UUID> inventoryIds);
+
+    Optional<Item> findById(UUID itemId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Item> findItemById(UUID inventoryItemId);
