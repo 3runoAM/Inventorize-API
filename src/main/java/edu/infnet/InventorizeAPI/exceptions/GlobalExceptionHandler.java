@@ -1,13 +1,27 @@
 package edu.infnet.InventorizeAPI.exceptions;
 
 import edu.infnet.InventorizeAPI.exceptions.custom.*;
+import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MailAuthenticationException.class)
+    public ResponseEntity<String> handleMailAuthenticationException(MailAuthenticationException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("| Erro de autenticação de email: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<String> handleMailException(MailException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("| Erro ao enviar email: " + ex.getMessage());
+    }
 
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex){
