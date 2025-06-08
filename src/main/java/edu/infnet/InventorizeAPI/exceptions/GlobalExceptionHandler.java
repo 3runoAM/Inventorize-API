@@ -1,10 +1,10 @@
 package edu.infnet.InventorizeAPI.exceptions;
 
 import edu.infnet.InventorizeAPI.exceptions.custom.*;
-import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.*;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
