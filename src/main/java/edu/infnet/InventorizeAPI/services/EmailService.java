@@ -15,6 +15,7 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Alerta de estoque baixo");
         message.setText(body);
+
         mailSender.send(message);
     }
 
