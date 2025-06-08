@@ -1,7 +1,8 @@
 package edu.infnet.InventorizeAPI.controllers;
 
-import edu.infnet.InventorizeAPI.dto.request.InventoryRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.PatchInventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.InventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.PatchInventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.UpdateInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.services.InventoryService;
 import jakarta.validation.Valid;
@@ -23,12 +24,12 @@ public class InventoryController {
     /**
      * Cria um novo inventário.
      *
-     * @param inventoryRequestDTO Dados do inventário a ser criado.
+     * @param inventoryDTO Dados do inventário a ser criado.
      * @return Informações do inventário criado.
      */
     @PostMapping
-    public ResponseEntity<InventoryResponseDTO> createInventory(@Valid @RequestBody InventoryRequestDTO inventoryRequestDTO) {
-        InventoryResponseDTO newInventory = inventoryService.createInventory(inventoryRequestDTO);
+    public ResponseEntity<InventoryResponseDTO> createInventory(@Valid @RequestBody InventoryDTO inventoryDTO) {
+        InventoryResponseDTO newInventory = inventoryService.createInventory(inventoryDTO);
 
         return ResponseEntity.ok(newInventory);
     }
@@ -62,12 +63,12 @@ public class InventoryController {
      * Atualiza um inventário existente.
      *
      * @param id Identificador do inventário a ser atualizado.
-     * @param inventoryRequestDTO Dados do inventário a ser atualizado.
+     * @param inventoryDTO Dados do inventário a ser atualizado.
      * @return Informações do inventário atualizado.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<InventoryResponseDTO> putInventory(@PathVariable UUID id, @Valid @RequestBody InventoryRequestDTO inventoryRequestDTO) {
-        InventoryResponseDTO updatedInventory = inventoryService.update(id, inventoryRequestDTO);
+    public ResponseEntity<InventoryResponseDTO> putInventory(@PathVariable UUID id, @Valid @RequestBody UpdateInventoryDTO inventoryDTO) {
+        InventoryResponseDTO updatedInventory = inventoryService.update(id, inventoryDTO);
 
         return ResponseEntity.ok(updatedInventory);
     }

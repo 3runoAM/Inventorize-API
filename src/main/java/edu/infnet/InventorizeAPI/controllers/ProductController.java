@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.controllers;
 
 import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.UpdateProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.services.ProductService;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class ProductController {
      * @return informações do produto criado
      */
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productData) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductDTO productData) {
         ProductResponseDTO savedProductInfo = productService.createProduct(productData);
 
         return ResponseEntity.ok(savedProductInfo);
@@ -81,7 +81,7 @@ public class ProductController {
      * @return informações do produto atualizado
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody PutProductDTO productData) {
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody UpdateProductDTO productData) {
         var productResponseDTO = productService.updateProduct(id, productData);
 
         return ResponseEntity.ok(productResponseDTO);

@@ -9,6 +9,7 @@ import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
 import edu.infnet.InventorizeAPI.security.auth.UserDetailsImpl;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -31,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+//@Disabled
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceTest {
     @Mock
@@ -40,7 +43,7 @@ public class AuthenticationServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private AuthUserRepository authUserRepository;
+    private AuthUserRepository userRepository;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -55,20 +58,20 @@ public class AuthenticationServiceTest {
         var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
         var userCaptor = getUserCaptor();
 
-        when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
+        when(userRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
         when(passwordEncoder.encode(authenticationRequestDTO.password())).thenReturn(mockedUser.getHashPassword());
-        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
+        when(userRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
 
         var userResponseDTO = authenticationService.register(authenticationRequestDTO);
 
-        verify(authUserRepository).save(userCaptor.capture());
+        verify(userRepository).save(userCaptor.capture());
 
         var savedUser = userCaptor.getValue();
 
         assertEquals(mockedUser.getId(), userResponseDTO.id(), "O id do usuário retornado deve permanecer o mesmo");
-        assertEquals(savedUser.getEmail(), userResponseDTO.email(), "O email do usuário retornado deve ser do usuário salvo");
-        assertEquals(savedUser.getHashPassword(), mockedUser.getHashPassword(), "A senha criptografada do usuário salvo deve permanecer igual");
-        assertEquals(savedUser.getRoles(), mockedUser.getRoles(), "As autorizações do usuário salvo devem se manter iguais");
+        assertEquals(userResponseDTO.email(), savedUser.getEmail(), "O email do usuário retornado deve ser do usuário salvo");
+        assertEquals(mockedUser.getHashPassword(), savedUser.getHashPassword(), "A senha criptografada do usuário salvo deve permanecer igual");
+        assertEquals(mockedUser.getRoles(), savedUser.getRoles(),"As autorizações do usuário salvo devem se manter iguais");
     }
 
     @Test
@@ -76,23 +79,23 @@ public class AuthenticationServiceTest {
         var authenticationRequestDTO = mockedAuthenticationRequest();
         var mockedUser = mockedAuthUser(authenticationRequestDTO.email());
 
-        when(authUserRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
-        when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
+        when(userRepository.save(any(AuthUser.class))).thenReturn(mockedUser);
+        when(userRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(false);
         when(passwordEncoder.encode(authenticationRequestDTO.password())).thenReturn("$2a$10$eImiTMZG4ELQ2Z8z5y3jOe");
 
         authenticationService.register(authenticationRequestDTO);
 
-        verify(authUserRepository).existsByEmail(authenticationRequestDTO.email());
+        verify(userRepository).existsByEmail(authenticationRequestDTO.email());
         verify(passwordEncoder).encode(authenticationRequestDTO.password());
-        verify(authUserRepository).save(any(AuthUser.class));
-        verifyNoMoreInteractions(authUserRepository, passwordEncoder);
+        verify(userRepository).save(any(AuthUser.class));
+        verifyNoMoreInteractions(userRepository, passwordEncoder);
     }
 
     @Test
     public void shouldThrowUserAlreadyRegisteredExceptionWhenEmailExists() {
         var authenticationRequestDTO = mockedAuthenticationRequest();
 
-        when(authUserRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(true);
+        when(userRepository.existsByEmail(authenticationRequestDTO.email())).thenReturn(true);
 
         var userRegisteredException = assertThrows(UserAlreadyRegisteredException.class, () -> {
             authenticationService.register(authenticationRequestDTO);
@@ -115,7 +118,7 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
+        when(userRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         var authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
 
@@ -138,15 +141,15 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(authUserRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
+        when(userRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         authenticationService.authenticate(authenticationRequestDTO);
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(authentication).getPrincipal();
         verify(tokenService).generateToken(any(UserDetails.class));
-        verify(authUserRepository).findByEmail(authenticationRequestDTO.email());
-        verifyNoMoreInteractions(authenticationManager, tokenService, authUserRepository);
+        verify(userRepository).findByEmail(authenticationRequestDTO.email());
+        verifyNoMoreInteractions(authenticationManager, tokenService, userRepository);
     }
 
     @Test
@@ -169,9 +172,19 @@ public class AuthenticationServiceTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         when(authentication.getPrincipal()).thenReturn(null);
 
-        assertThrows(UserNotAuthenticatedException.class, () -> {
-            authenticationService.getAuthenticatedUser();
-        });
+        assertThrows(UserNotAuthenticatedException.class,
+                    () -> authenticationService.getAuthenticatedUser(),
+                "Deve lançar UserNotAuthenticatedException quando nenhum usuário estiver autenticado");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUserNotFoundByEmail() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+
+        assertThrows(UsernameNotFoundException.class,
+                    () -> authenticationService.findByEmail("email@email.com"),
+                "Deve lançar UsernameNotFoundException quando nenhum usuário for encontrado com o email fornecido");
     }
 
     // Métodos auxiliares -----------------------

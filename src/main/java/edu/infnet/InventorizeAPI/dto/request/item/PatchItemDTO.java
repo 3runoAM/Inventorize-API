@@ -1,15 +1,15 @@
-package edu.infnet.InventorizeAPI.dto.request;
+package edu.infnet.InventorizeAPI.dto.request.item;
 
-import edu.infnet.InventorizeAPI.entities.InventoryItem;
+import edu.infnet.InventorizeAPI.entities.Item;
 import jakarta.validation.constraints.PositiveOrZero;
 
 
-public record PatchItemRequestDTO(
+public record PatchItemDTO(
         @PositiveOrZero Integer currentQuantity,
         @PositiveOrZero Integer minimumStockLevel)
 {
-    public static PatchItemRequestDTO from(InventoryItem item) {
-        return new PatchItemRequestDTO(
+    public static PatchItemDTO from(Item item) {
+        return new PatchItemDTO(
                 item.getCurrentQuantity(),
                 item.getMinimumStockLevel()
         );

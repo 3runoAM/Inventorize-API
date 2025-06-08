@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
 import edu.infnet.InventorizeAPI.dto.request.product.PatchProductDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.ProductRequestDTO;
-import edu.infnet.InventorizeAPI.dto.request.product.PutProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.ProductDTO;
+import edu.infnet.InventorizeAPI.dto.request.product.UpdateProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.entities.AuthUser;
 import edu.infnet.InventorizeAPI.entities.Product;
@@ -11,6 +11,7 @@ import edu.infnet.InventorizeAPI.exceptions.custom.ProductAlreadyExistsException
 import edu.infnet.InventorizeAPI.exceptions.custom.ProductNotFoundException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UnauthorizedRequestException;
 import edu.infnet.InventorizeAPI.repository.ProductRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+//@Disabled
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
     @Mock
@@ -397,8 +399,8 @@ public class ProductServiceTest {
 
     // MÉTODOS UTILITÁRIOS ---------------------------------------------------------------------------------------------
 
-    private ProductRequestDTO mockedProductRequest() {
-        return new ProductRequestDTO("ProductB", "BRU123");
+    private ProductDTO mockedProductRequest() {
+        return new ProductDTO("ProductB", "BRU123");
     }
 
     private Product mockedProduct() {
@@ -437,7 +439,7 @@ public class ProductServiceTest {
         return productList;
     }
 
-    private PutProductDTO mockedPutProductDTO() {
-        return new PutProductDTO("UpdatedProduct", "BRU12345");
+    private UpdateProductDTO mockedPutProductDTO() {
+        return new UpdateProductDTO("UpdatedProduct", "BRU12345");
     }
 }
