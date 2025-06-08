@@ -5,7 +5,7 @@ import edu.infnet.InventorizeAPI.entities.Inventory;
 import java.util.UUID;
 
 public record InventoryResponseDTO(
-        UUID inventoryId,
+        UUID id,
         String name,
         String description,
         String notificationEmail,

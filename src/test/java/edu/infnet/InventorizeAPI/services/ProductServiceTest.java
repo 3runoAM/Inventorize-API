@@ -11,6 +11,7 @@ import edu.infnet.InventorizeAPI.exceptions.custom.ProductAlreadyExistsException
 import edu.infnet.InventorizeAPI.exceptions.custom.ProductNotFoundException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UnauthorizedRequestException;
 import edu.infnet.InventorizeAPI.repository.ProductRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+//@Disabled
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
     @Mock

@@ -1,10 +1,10 @@
 package edu.infnet.InventorizeAPI.controllers;
 
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.ItemDTO;
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.PatchItemDTO;
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.UpdateItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.ItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.PatchItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
-import edu.infnet.InventorizeAPI.services.InventoryItemService;
+import edu.infnet.InventorizeAPI.services.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/inventoryItems")
 public class InventoryItemController {
-    private final InventoryItemService inventoryItemService;
+    private final ItemService itemService;
 
     /**
      * Cria um novo item de inventário.
@@ -29,7 +29,7 @@ public class InventoryItemController {
      */
     @PostMapping
     public ResponseEntity<ItemResponseDTO> createInventoryItem(@Valid @RequestBody ItemDTO itemRequest) {
-        ItemResponseDTO inventoryItemInfo = inventoryItemService.create(itemRequest);
+        ItemResponseDTO inventoryItemInfo = itemService.create(itemRequest);
 
         return ResponseEntity.ok(inventoryItemInfo);
     }
@@ -42,7 +42,7 @@ public class InventoryItemController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> getInventoryItem(@PathVariable UUID id) {
-        ItemResponseDTO inventoryItemInfo = inventoryItemService.getById(id);
+        ItemResponseDTO inventoryItemInfo = itemService.getById(id);
 
         return ResponseEntity.ok(inventoryItemInfo);
     }
@@ -54,7 +54,7 @@ public class InventoryItemController {
      */
     @GetMapping
     public ResponseEntity<List<ItemResponseDTO>> getInventoryItems() {
-        List<ItemResponseDTO> items = inventoryItemService.getAll();
+        List<ItemResponseDTO> items = itemService.getAll();
 
         return ResponseEntity.ok(items);
     }
@@ -67,7 +67,7 @@ public class InventoryItemController {
      */
     @GetMapping("/inventory/{inventoryId}")
     public ResponseEntity<List<ItemResponseDTO>> getAllByInventory(@PathVariable UUID inventoryId) {
-        List<ItemResponseDTO> items = inventoryItemService.getAllByInventoryId(inventoryId);
+        List<ItemResponseDTO> items = itemService.getAllByInventoryId(inventoryId);
 
         return ResponseEntity.ok(items);
     }
@@ -81,7 +81,7 @@ public class InventoryItemController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> updateInventoryItem(@PathVariable UUID id, @Valid @RequestBody UpdateItemDTO itemRequest) {
-        ItemResponseDTO updatedItem = inventoryItemService.update(id, itemRequest);
+        ItemResponseDTO updatedItem = itemService.update(id, itemRequest);
 
         return ResponseEntity.ok(updatedItem);
     }
@@ -95,7 +95,7 @@ public class InventoryItemController {
      */
     @PatchMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> patchInventoryItem(@PathVariable UUID id, @Valid @RequestBody PatchItemDTO itemRequest) {
-        ItemResponseDTO patchedItem = inventoryItemService.patch(id, itemRequest);
+        ItemResponseDTO patchedItem = itemService.patch(id, itemRequest);
 
         return ResponseEntity.ok(patchedItem);
     }
@@ -108,7 +108,7 @@ public class InventoryItemController {
      */
     @PatchMapping("/{id}/adjust")
     public ResponseEntity<ItemResponseDTO> adjustInventoryItemQuantity(@PathVariable UUID id, @RequestParam int adjustment) {
-        ItemResponseDTO updatedItem = inventoryItemService.adjustCurrentQuantity(id, adjustment);
+        ItemResponseDTO updatedItem = itemService.adjustCurrentQuantity(id, adjustment);
 
         return ResponseEntity.ok(updatedItem);
     }
@@ -121,7 +121,7 @@ public class InventoryItemController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteInventoryItem(@PathVariable UUID id) {
-        inventoryItemService.deleteById(id);
+        itemService.deleteById(id);
 
         return ResponseEntity.ok("Item deletado com sucesso");
     }

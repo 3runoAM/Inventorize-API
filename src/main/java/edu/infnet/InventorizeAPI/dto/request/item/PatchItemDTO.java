@@ -1,4 +1,4 @@
-package edu.infnet.InventorizeAPI.dto.request.inventoryItem;
+package edu.infnet.InventorizeAPI.dto.request.item;
 
 import edu.infnet.InventorizeAPI.entities.Item;
 import jakarta.validation.constraints.PositiveOrZero;

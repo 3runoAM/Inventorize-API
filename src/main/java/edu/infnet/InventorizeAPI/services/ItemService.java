@@ -1,8 +1,8 @@
 package edu.infnet.InventorizeAPI.services;
 
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.ItemDTO;
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.PatchItemDTO;
-import edu.infnet.InventorizeAPI.dto.request.inventoryItem.UpdateItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.ItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.PatchItemDTO;
+import edu.infnet.InventorizeAPI.dto.request.item.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.entities.*;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryItemService {
+public class ItemService {
     private final EmailService emailService;
     private final ProductService productService;
     private final InventoryService inventoryService;
@@ -68,7 +68,7 @@ public class InventoryItemService {
     public List<ItemResponseDTO> getAll() {
         var inventoryIds = inventoryService.getAll()
                 .stream()
-                .map(InventoryResponseDTO::inventoryId)
+                .map(InventoryResponseDTO::id)
                 .toList();
 
         return inventoryItemRepository.getAllByInventoryIdIn(inventoryIds)

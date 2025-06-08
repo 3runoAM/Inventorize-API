@@ -2,6 +2,7 @@ package edu.infnet.InventorizeAPI.controllers;
 
 import edu.infnet.InventorizeAPI.dto.request.inventory.InventoryDTO;
 import edu.infnet.InventorizeAPI.dto.request.inventory.PatchInventoryDTO;
+import edu.infnet.InventorizeAPI.dto.request.inventory.UpdateInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.services.InventoryService;
 import jakarta.validation.Valid;
@@ -66,7 +67,7 @@ public class InventoryController {
      * @return Informações do inventário atualizado.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<InventoryResponseDTO> putInventory(@PathVariable UUID id, @Valid @RequestBody InventoryDTO inventoryDTO) {
+    public ResponseEntity<InventoryResponseDTO> putInventory(@PathVariable UUID id, @Valid @RequestBody UpdateInventoryDTO inventoryDTO) {
         InventoryResponseDTO updatedInventory = inventoryService.update(id, inventoryDTO);
 
         return ResponseEntity.ok(updatedInventory);
