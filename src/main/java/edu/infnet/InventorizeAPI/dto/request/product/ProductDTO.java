@@ -5,5 +5,5 @@ import org.hibernate.validator.constraints.Length;
 
 public record ProductDTO(
         @NotBlank @Length(max = 100) String name,
-        @Length(max = 100) String supplierCode
+        @NotBlank @Length(max = 100) String supplierCode
 ) {}
