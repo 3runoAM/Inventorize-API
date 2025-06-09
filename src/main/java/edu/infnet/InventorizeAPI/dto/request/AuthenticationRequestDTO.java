@@ -9,10 +9,7 @@ public record AuthenticationRequestDTO(
         @Schema(
                 name = "email",
                 description = "Email do usuário para autenticação, único para casa usuário",
-                examples = {
-                        "user_mail@gmail.com",
-                        "emailUser@outlook.com"
-                },
+                examples = "user_mail@gmail.com",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @Email(message = "O email deve ser válido")
@@ -22,10 +19,7 @@ public record AuthenticationRequestDTO(
         @Schema(
                 name = "password",
                 description = "Senha do usuário para autenticação, deve ter entre 8 e 16 caracteres",
-                examples = {
-                        "Senha123!",
-                        "SenhaSegura456"
-                },
+                examples = "SenhaSegura456",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotBlank(message = "Senha não pode ser vazia")
