@@ -12,7 +12,7 @@ public record ProductDTO(
                         "Tinta Acrílica Dourada Pérola - 50ml",
                         "Argila Polimérica Biscuit Branca - 500g",
                         "Fita de Cetim 5cm - Vermelho Vinho",
-                },
+                }
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank(message = "O nome do produto é obrigatório")
         @Length(max = 100, message = "O nome do produto deve ter no máximo 100 caracteres")
