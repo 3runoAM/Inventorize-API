@@ -15,7 +15,7 @@ public record ItemDTO(
                         "3ac44bf6-f199-4f41-9ef7-a63b4442f533"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull
+        @NotNull(message = "O id do produto não pode ser nulo")
         UUID productId,
 
         @Schema(
@@ -26,9 +26,8 @@ public record ItemDTO(
                         "287a2378-1203-4723-a83c-f8bbe6d73dac"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull
+        @NotNull(message = "O id do inventário não pode ser nulo")
         UUID inventoryId,
-
 
         @Schema(
                 description = "A quantidade atual do item no inventário",
@@ -38,8 +37,8 @@ public record ItemDTO(
                         "1"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull
-        @PositiveOrZero
+        @NotNull(message = "A quantidade atual do item não pode ser nula")
+        @PositiveOrZero(message = "A quantidade atual do item deve ser zero ou positiva")
         int currentQuantity,
 
         @Schema(
@@ -50,7 +49,7 @@ public record ItemDTO(
                         "1"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull
-        @PositiveOrZero
+        @NotNull(message = "O limite crítico de estoque do item não pode ser nulo")
+        @PositiveOrZero(message = "O limite crítico de estoque do item deve ser zero ou positivo")
         int minimumStockLevel
 ) {}

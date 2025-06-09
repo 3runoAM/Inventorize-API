@@ -10,9 +10,7 @@ public record UpdateProductDTO(
                 examples = {
                         "Tinta Acrílica Dourada Pérola - 50ml",
                         "Argila Polimérica Biscuit Branca - 500g",
-                        "Fita de Cetim 5cm - Vermelho Vinho",
-                        "Tecido Algodão Cru - 1 Metro",
-                        "Pincel Chato Sintético Nº 8"
+                        "Fita de Cetim 5cm - Vermelho Vinho"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank
@@ -24,7 +22,7 @@ public record UpdateProductDTO(
                 examples = {
                         "CODIGO-001",
                         "Dona Lúcia +551191234-5678",
-                        "Loja de Materiais Artísticos, Rua das Flores, 12345",
+                        "Loja de Materiais Artísticos, Rua das Flores, 12345"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank

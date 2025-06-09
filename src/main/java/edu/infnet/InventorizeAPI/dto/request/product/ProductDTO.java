@@ -6,21 +6,19 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
 public record ProductDTO(
-        @Schema(name = "name",
+        @Schema(
                 description = "O nome do produto,",
                 examples = {
                         "Tinta Acrílica Dourada Pérola - 50ml",
                         "Argila Polimérica Biscuit Branca - 500g",
                         "Fita de Cetim 5cm - Vermelho Vinho",
-                        "Tecido Algodão Cru - 1 Metro",
-                        "Pincel Chato Sintético Nº 8"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank(message = "O nome do produto é obrigatório")
         @Length(max = 100, message = "O nome do produto deve ter no máximo 100 caracteres")
         String name,
 
-        @Schema(name = "supplierCode",
+        @Schema(
                 description = "Código do fornecedor do produto",
                 examples = {
                         "CODIGO-001",
@@ -31,4 +29,4 @@ public record ProductDTO(
         @NotBlank(message = "O código do fornecedor é obrigatório")
         @Length(max = 100, message = "O código do fornecedor deve ter no máximo 100 caracteres")
         String supplierCode
-) { }
+) {}
