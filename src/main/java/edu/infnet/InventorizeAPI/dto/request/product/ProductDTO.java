@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
 public record ProductDTO(
-        @Schema(name = "Nome",
+        @Schema(name = "name",
+                description = "O nome do produto,",
                 examples = {
                         "Tinta Acrílica Dourada Pérola - 50ml",
                         "Argila Polimérica Biscuit Branca - 500g",
@@ -19,7 +20,8 @@ public record ProductDTO(
         @Length(max = 100, message = "O nome do produto deve ter no máximo 100 caracteres")
         String name,
 
-        @Schema(name = "Código do fornecedor",
+        @Schema(name = "supplierCode",
+                description = "Código do fornecedor do produto",
                 examples = {
                         "CODIGO-001",
                         "Dona Lúcia +551191234-5678",

@@ -446,8 +446,9 @@ public class ItemServiceTest {
         var insufficientStockException = assertThrows(InsufficientStockException.class,
                 () -> itemService.adjustCurrentQuantity(item.getId(), adjustment),
                 "Ajuste de estoque não pode resultar em quantidade negativa");
-        assertEquals("Ajuste de estoque não pode resultar em quantidade negativa. Estoque atual do item %s: %d".formatted(item.getProduct().getName(), item.getCurrentQuantity()),
-                insufficientStockException.getMessage());
+        assertEquals(String.format("Ajuste de estoque não pode resultar em quantidade negativa.\nITEM: [ %s ] \nEM ESTOQUE: %d ", item.getProduct().getName(), item.getCurrentQuantity()),
+                insufficientStockException.getMessage(),
+                "A mensagem de exceção deve exibir o nome do item e a quantidade atual");
     }
 
     // TESTE DE ENVIO DE EMAIL -----------------------------------------------------------------------------------------

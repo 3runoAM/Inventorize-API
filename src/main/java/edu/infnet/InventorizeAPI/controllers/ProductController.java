@@ -5,6 +5,7 @@ import edu.infnet.InventorizeAPI.dto.request.product.ProductDTO;
 import edu.infnet.InventorizeAPI.dto.request.product.UpdateProductDTO;
 import edu.infnet.InventorizeAPI.dto.response.ProductResponseDTO;
 import edu.infnet.InventorizeAPI.services.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;

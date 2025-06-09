@@ -19,8 +19,3 @@ server:
     context-path: /inventorize/v1
 jwt:
     secret: ${JWT_SECRET}
-springdoc:
-  swagger-ui:
-    title: Inventorize API
-    version: 1.0
-    path: /swagger-ui.html

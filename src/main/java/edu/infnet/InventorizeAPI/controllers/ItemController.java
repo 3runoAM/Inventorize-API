@@ -5,6 +5,7 @@ import edu.infnet.InventorizeAPI.dto.request.item.PatchItemDTO;
 import edu.infnet.InventorizeAPI.dto.request.item.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.services.ItemService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
