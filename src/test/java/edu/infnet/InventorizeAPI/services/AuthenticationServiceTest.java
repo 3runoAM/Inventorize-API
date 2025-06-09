@@ -118,7 +118,6 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(userRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         var authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
 
@@ -141,39 +140,41 @@ public class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(tokenService.generateToken(any(UserDetails.class))).thenReturn(jwtToken);
-        when(userRepository.findByEmail(authenticationRequestDTO.email())).thenReturn(Optional.of(mockedUser));
 
         authenticationService.authenticate(authenticationRequestDTO);
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(authentication).getPrincipal();
         verify(tokenService).generateToken(any(UserDetails.class));
-        verify(userRepository).findByEmail(authenticationRequestDTO.email());
-        verifyNoMoreInteractions(authenticationManager, tokenService, userRepository);
+        verifyNoMoreInteractions(authenticationManager, tokenService);
     }
 
     @Test
     public void shouldGetAuthenticatedUser() {
         var mockedAuthUser = mockedAuthUser("authenticatedUser@email.com");
+        var userDetails = UserDetailsImpl.builder()
+                .authUser(mockedAuthUser)
+                .build();
         var authentication = mock(Authentication.class);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        when(authentication.getPrincipal()).thenReturn(mockedAuthUser);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
 
         var authenticatedUser = authenticationService.getAuthenticatedUser();
 
         assertEquals(mockedAuthUser.getId(), authenticatedUser.getId(), "O ID do usuário autenticado deve ser igual ao esperado");
     }
-
     @Test
-    public void shouldThrowExceptionWhenNoUserIsAuthenticated() {
+    public void shouldThrowExceptionWhenUserIsNotAuthenticated() {
         var authentication = mock(Authentication.class);
+        var userDetails = mock(UserDetailsImpl.class);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        when(authentication.getPrincipal()).thenReturn(null);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getAuthUser()).thenReturn(null);
 
         assertThrows(UserNotAuthenticatedException.class,
-                    () -> authenticationService.getAuthenticatedUser(),
+                () -> authenticationService.getAuthenticatedUser(),
                 "Deve lançar UserNotAuthenticatedException quando nenhum usuário estiver autenticado");
     }
 

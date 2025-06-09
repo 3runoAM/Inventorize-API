@@ -8,11 +8,14 @@ import edu.infnet.InventorizeAPI.enums.Role;
 import edu.infnet.InventorizeAPI.exceptions.custom.UserAlreadyRegisteredException;
 import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException;
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
+import edu.infnet.InventorizeAPI.security.auth.UserDetailsImpl;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -61,8 +64,9 @@ public class AuthenticationService {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(userData.email(), userData.password());
         Authentication auth = authenticationManager.authenticate(usernamePassword);
 
-        String token = tokenService.generateToken((UserDetails) auth.getPrincipal());
-        AuthUser user = this.findByEmail(userData.email());
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+        String token = tokenService.generateToken(userDetails);
+        AuthUser user = userDetails.getAuthUser();
 
         return AuthenticationResponseDTO.from(token, user);
     }
@@ -74,7 +78,8 @@ public class AuthenticationService {
      * @throws UserNotAuthenticatedException Se nenhum usuário estiver autenticado.
      */
     protected AuthUser getAuthenticatedUser() {
-        AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        AuthUser authUser = userDetails.getAuthUser();
         if (authUser == null) throw new UserNotAuthenticatedException("Nenhum usuário autenticado encontrado.");
 
         return authUser;

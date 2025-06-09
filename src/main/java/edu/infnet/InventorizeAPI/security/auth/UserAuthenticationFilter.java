@@ -31,7 +31,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtTokenService.getUsername(token);
             var user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-            UserDetails userDetails = UserDetailsImpl.builder().authUser(user).build();
+            var userDetails = UserDetailsImpl.builder().authUser(user).build();
 
             if (!jwtTokenService.isTokenValid(token, userDetails)) throw new InvalidTokenException("Token inválido");
 
@@ -42,6 +42,10 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String recoverToken(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        var authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        return authHeader.substring(7);
     }
 }

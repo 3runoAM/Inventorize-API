@@ -157,7 +157,7 @@ public class ItemService {
         int newQuantity = item.getCurrentQuantity() + adjustment;
 
         if (newQuantity < 0) {
-            throw new InsufficientStockException("Ajuste de estoque não pode resultar em quantidade negativa. Estoque atual do item %s: %d".formatted(item.getProduct().getName(), item.getCurrentQuantity()));
+            throw new InsufficientStockException(String.format("Ajuste de estoque não pode resultar em quantidade negativa.\nITEM: [ %s ] \nEM ESTOQUE: %d ", item.getProduct().getName(), item.getCurrentQuantity()));
         }
 
         var newItem = item.toBuilder()

@@ -5,6 +5,7 @@ import edu.infnet.InventorizeAPI.dto.request.inventory.PatchInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.request.inventory.UpdateInventoryDTO;
 import edu.infnet.InventorizeAPI.dto.response.InventoryResponseDTO;
 import edu.infnet.InventorizeAPI.services.InventoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
 @RequestMapping("/inventories")
 public class InventoryController {
     private final InventoryService inventoryService;

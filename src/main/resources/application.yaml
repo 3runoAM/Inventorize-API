@@ -2,8 +2,7 @@ spring:
   application:
     name: InventorizeAPI
   profiles:
-    active: "test"
-  # Configuração do Spring Mail
+    active: "dev"
   mail:
     host: smtp.gmail.com
     username: ${EMAIL_USERNAME}
