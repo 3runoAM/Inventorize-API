@@ -2,8 +2,7 @@ spring:
   application:
     name: InventorizeAPI
   profiles:
-    active: "test"
-  # Configuração do Spring Mail
+    active: "dev"
   mail:
     host: smtp.gmail.com
     username: ${EMAIL_USERNAME}
@@ -20,3 +19,9 @@ server:
     context-path: /inventorize/v1
 jwt:
     secret: ${JWT_SECRET}
+
+springdoc:
+  swagger-ui:
+    title: Minha API
+    version: 1.0.0
+    path: /swagger-ui.html
