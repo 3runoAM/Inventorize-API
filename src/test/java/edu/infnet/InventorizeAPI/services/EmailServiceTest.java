@@ -7,11 +7,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,5 +53,14 @@ public class EmailServiceTest {
         var actualBody = emailService.createEmailBody(inventoryName, itemName, quantity);
 
         assertEquals(expectedBody, actualBody);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmailSendingFails() {
+        doThrow(new MailSendException("Erro ao enviar")).when(mailSender).send(any(SimpleMailMessage.class));
+
+        assertThrows(MailSendException.class, () -> {
+            emailService.sendEmail("example@email.com", "Subject");
+        });
     }
 }

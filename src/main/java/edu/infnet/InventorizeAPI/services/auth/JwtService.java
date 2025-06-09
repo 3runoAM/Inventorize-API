@@ -16,10 +16,6 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
     /**
      * Gera um token JWT para o usuário especificado.
      *
@@ -30,7 +26,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .expiration(new Date(System.currentTimeMillis() + 10800000))
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -43,7 +39,8 @@ public class JwtService {
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        if (!username.equals(userDetails.getUsername())) return false;
+        return !isTokenExpired(token);
     }
 
     /**
@@ -79,7 +76,7 @@ public class JwtService {
     /**
      * Extrai uma claim específica do token usando uma função de resolução.
      *
-     * @param token token JWT do qual será extraída a claim
+     * @param token          token JWT do qual será extraída a claim
      * @param claimsResolver função para resolver o tipo específico da claim
      * @return T valor da claim convertido para o tipo especificado
      */
@@ -100,5 +97,9 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }
