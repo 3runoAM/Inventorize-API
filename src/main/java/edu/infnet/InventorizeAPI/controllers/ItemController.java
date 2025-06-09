@@ -17,8 +17,8 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/inventoryItems")
-public class InventoryItemController {
+@RequestMapping("/items")
+public class ItemController {
     private final ItemService itemService;
 
     /**
