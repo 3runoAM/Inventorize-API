@@ -29,6 +29,6 @@ public record ProductDTO(
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank(message = "O código do fornecedor é obrigatório")
-        @Length(max = 100, message = "O código do fornecedor é obrigatório")
+        @Length(max = 100, message = "O código do fornecedor deve ter no máximo 100 caracteres")
         String supplierCode
 ) { }

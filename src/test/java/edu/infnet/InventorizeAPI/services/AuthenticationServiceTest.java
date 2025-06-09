@@ -9,7 +9,6 @@ import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
 import edu.infnet.InventorizeAPI.security.auth.UserDetailsImpl;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

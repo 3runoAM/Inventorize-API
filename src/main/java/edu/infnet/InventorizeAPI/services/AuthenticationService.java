@@ -10,7 +10,6 @@ import edu.infnet.InventorizeAPI.exceptions.custom.UserNotAuthenticatedException
 import edu.infnet.InventorizeAPI.repository.AuthUserRepository;
 import edu.infnet.InventorizeAPI.security.auth.UserDetailsImpl;
 import edu.infnet.InventorizeAPI.services.auth.JwtService;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
