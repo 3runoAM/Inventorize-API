@@ -6,6 +6,7 @@ import edu.infnet.InventorizeAPI.dto.request.item.UpdateItemDTO;
 import edu.infnet.InventorizeAPI.dto.response.ItemResponseDTO;
 import edu.infnet.InventorizeAPI.services.ItemService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "BearerAuth")
+@Tag(name = "Controller de Itens", description = "Gerencia os itens de inventário")
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
@@ -64,12 +66,12 @@ public class ItemController {
     /**
      * Lista todos os itens de um inventário específico.
      *
-     * @param inventoryId identificador do inventário
+     * @param id identificador do inventário
      * @return lista de itens pertencentes ao inventário
      */
-    @GetMapping("/inventory/{inventoryId}")
-    public ResponseEntity<List<ItemResponseDTO>> getAllByInventory(@PathVariable UUID inventoryId) {
-        List<ItemResponseDTO> items = itemService.getAllItemsByInventoryId(inventoryId);
+    @GetMapping("/inventory/{id}")
+    public ResponseEntity<List<ItemResponseDTO>> getAllByInventory(@PathVariable UUID id) {
+        List<ItemResponseDTO> items = itemService.getAllItemsByInventoryId(id);
 
         return ResponseEntity.ok(items);
     }
@@ -77,7 +79,7 @@ public class ItemController {
     /**
      * Atualiza completamente um item de inventário.
      *
-     * @param id identificador do item
+     * @param id          identificador do item
      * @param itemRequest dados atualizados do item
      * @return informações do item atualizado
      */
@@ -91,7 +93,7 @@ public class ItemController {
     /**
      * Atualiza parcialmente um item de inventário.
      *
-     * @param id identificador do item
+     * @param id          identificador do item
      * @param itemRequest dados parciais para atualização
      * @return informações do item atualizado
      */
@@ -104,7 +106,8 @@ public class ItemController {
 
     /**
      * Atualiza a quantidade atual de um item de inventário.
-     * @param id identificador do item
+     *
+     * @param id         identificador do item
      * @param adjustment quantidade a ser ajustada (pode ser positiva ou negativa)
      * @return informações do item atualizado
      */
@@ -126,5 +129,12 @@ public class ItemController {
         itemService.deleteById(id);
 
         return ResponseEntity.ok("Item deletado com sucesso");
+    }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<ItemResponseDTO>> getLowStockItems() {
+        List<ItemResponseDTO> lowStockItems = itemService.getLowStockItems();
+
+        return ResponseEntity.ok(lowStockItems);
     }
 }

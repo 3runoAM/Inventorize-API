@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = "hashPassword")
-public class AuthUser extends AuditableEntity {
+public class AuthUser {
     @Id
     @GeneratedValue(generator = "UUID")
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)

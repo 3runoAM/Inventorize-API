@@ -129,7 +129,7 @@ public class ItemServiceTest {
     public void shouldGetAllItemsCorrectly() {
         var inventoryResponseDtoList = getInventoryResponseDTOList();
         var inventoryIdsList = getInventoryIdsList();
-        var itemList = createItemListWithDiferentInventories();
+        var itemList = createItemListWithDifferentInventories();
         var user = createAuthUser();
 
         when(inventoryService.getAll()).thenReturn(inventoryResponseDtoList);
@@ -156,7 +156,7 @@ public class ItemServiceTest {
     public void shouldCallCorrectMethodsWhenGettingAllItems() {
         var inventoryResponseDtoList = getInventoryResponseDTOList();
         var inventoryIdsList = getInventoryIdsList();
-        var itemList = createItemListWithDiferentInventories();
+        var itemList = createItemListWithDifferentInventories();
 
         when(inventoryService.getAll()).thenReturn(inventoryResponseDtoList);
         when(itemRepository.getAllItemsByInventoryIdIn(inventoryIdsList)).thenReturn(itemList);
@@ -593,6 +593,47 @@ public class ItemServiceTest {
         assertEquals(String.format("Item de inventário com o [ ID: %s ] não encontrado", itemId), inventoryItemNotFound.getMessage());
     }
 
+    // TESTES DE RECUPERAÇÃO DE ITENS COM ESTOQUE BAIXO ----------------------------------------------------------------
+    @Test
+    public void shouldGetLowStockItemsCorrectly() {
+        var inventoryResponseDtoList = getInventoryResponseDTOList();
+        var inventoryIdsList = getInventoryIdsList();
+        var lowStockItems = createLowStockItemList();
+
+        when(inventoryService.getAll()).thenReturn(inventoryResponseDtoList);
+        when(itemRepository.getAllWhereMinimumStockLevelIsLowerThanCurrentQuantityByInventoryIdIn(inventoryIdsList)).thenReturn(lowStockItems);
+
+        var lowStockItemResponseDtoList = itemService.getLowStockItems();
+
+        assertEquals(lowStockItems.size(), lowStockItemResponseDtoList.size(), "O número de itens de baixo estoque deve ser igual ao número de itens retornados");
+        for (int i = 0; i < lowStockItems.size(); i++) {
+            var item = lowStockItems.get(i);
+            var responseDto = lowStockItemResponseDtoList.get(i);
+
+            assertEquals(item.getId(), responseDto.id(), "O ID do item deve ser igual ao ID do DTO");
+            assertEquals(item.getProduct().getId(), responseDto.productId(), "O ID do produto associado deve ser igual ao ID do DTO");
+            assertEquals(item.getInventory().getId(), responseDto.inventoryId(), "O ID do inventário associado deve ser igual ao ID do DTO");
+            assertEquals(item.getCurrentQuantity(), responseDto.currentQuantity(), "A quantidade atual deve ser igual à do DTO");
+            assertEquals(item.getMinimumStockLevel(), responseDto.minimumStockLevel(), "A quantidade mínima em estoque deve ser igual ao do DTO");
+        }
+    }
+
+    @Test
+    public void shouldCallCorrectMethodsWhenGettingLowStockItems() {
+        var inventoryResponseDtoList = getInventoryResponseDTOList();
+        var inventoryIdsList = getInventoryIdsList();
+        var lowStockItems = createLowStockItemList();
+
+        when(inventoryService.getAll()).thenReturn(inventoryResponseDtoList);
+        when(itemRepository.getAllWhereMinimumStockLevelIsLowerThanCurrentQuantityByInventoryIdIn(inventoryIdsList)).thenReturn(lowStockItems);
+
+        itemService.getLowStockItems();
+
+        verify(inventoryService, times(1)).getAll();
+        verify(itemRepository, times(1)).getAllWhereMinimumStockLevelIsLowerThanCurrentQuantityByInventoryIdIn(inventoryIdsList);
+        verifyNoMoreInteractions(inventoryService, itemRepository);
+    }
+
     // MÉTODOS UTILITÁRIOS ---------------------------------------------------------------------------------------------
     private ItemDTO getItemDTO() {
         return new ItemDTO(
@@ -660,7 +701,7 @@ public class ItemServiceTest {
         );
     }
 
-    private List<Item> createItemListWithDiferentInventories() {
+    private List<Item> createItemListWithDifferentInventories() {
         var inventoryIdsList = getInventoryIdsList();
         var itemList = new ArrayList<Item>();
         for (var i = 0; i < 10; i++) {
@@ -713,10 +754,39 @@ public class ItemServiceTest {
 
     private List<InventoryResponseDTO> getInventoryResponseDTOList() {
         var inventoryResponseDtoList = new ArrayList<InventoryResponseDTO>();
-        var itemList = createItemListWithDiferentInventories();
+        var itemList = createItemListWithDifferentInventories();
         for (var item : itemList) {
             inventoryResponseDtoList.add(InventoryResponseDTO.from(item.getInventory()));
         }
         return inventoryResponseDtoList;
+    }
+
+    private List<Item> createLowStockItemList() {
+        var inventoryIdsList = getInventoryIdsList();
+        var lowStockItems = new ArrayList<Item>();
+        for (var i = 0; i < 10; i++) {
+            var item = createItem().toBuilder()
+                    .id(UUID.randomUUID())
+                    .inventory(Inventory.builder()
+                            .id(inventoryIdsList.get(i))
+                            .name("Inventário " + (i + 1))
+                            .description("Descrição do Inventário " + (i + 1))
+                            .notificationEmail("aviso" + (i + 1) + "@user.com")
+                            .owner(createAuthUser())
+                            .build()
+                    )
+                    .product(Product.builder()
+                            .id(UUID.randomUUID())
+                            .name("Produto " + (i + 1))
+                            .supplierCode("ABC" + (i + 1) + "123")
+                            .owner(createAuthUser())
+                            .build()
+                    )
+                    .currentQuantity(2)
+                    .minimumStockLevel(5)
+                    .build();
+            lowStockItems.add(item);
+        }
+        return lowStockItems;
     }
 }

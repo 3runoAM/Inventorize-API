@@ -223,7 +223,7 @@ public class InventoryController {
      * @return Informações do inventário atualizado.
      */
     @Operation(
-            summary = "Atualiza todos os campos de um inventário existente",
+            summary = "Atualiza todos os campos de um inventário pelo ID",
             description = "Atualiza todos os campos de um inventário existente, incluindo nome, descrição e email de notificação."
     )
     @ApiResponses({

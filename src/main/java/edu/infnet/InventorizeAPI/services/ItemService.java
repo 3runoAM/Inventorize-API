@@ -171,6 +171,19 @@ public class ItemService {
         return ItemResponseDTO.from(updatedItem);
     }
 
+    public List<ItemResponseDTO> getLowStockItems() {
+        var inventoryIds = inventoryService.getAll()
+                .stream()
+                .map(InventoryResponseDTO::id)
+                .toList();
+
+        List<Item> lowStockItems = itemRepository.getAllWhereMinimumStockLevelIsLowerThanCurrentQuantityByInventoryIdIn(inventoryIds);
+
+        return lowStockItems.stream()
+                .map(ItemResponseDTO::from)
+                .toList();
+    }
+
     /**
      * Valida a propriedade de um item de inventário pelo seu ID, garantindo que o usuário autenticado é o proprietário do inventário e do produto associado ao item.
      *
