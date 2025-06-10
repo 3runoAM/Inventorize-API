@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
+@Schema(description = "DTO para resposta de item no inventário")
 public record ItemResponseDTO(
         @Schema(
                 description = "O ID do item",

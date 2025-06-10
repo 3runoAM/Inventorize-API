@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Null;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para criação de um novo inventário")
 public record InventoryDTO(
         @Schema(
                 description = "O nome do inventário",
@@ -41,7 +42,7 @@ public record InventoryDTO(
                 }
         )
         @NotBlank(message = "O e-mail para notificações é obrigatório")
-        @Email (message = "O e-mail para notificações deve ser válido")
+        @Email(message = "O e-mail para notificações deve ser válido")
         String notificationEmail
 ) {
     public static InventoryDTO from(Inventory inventory) {

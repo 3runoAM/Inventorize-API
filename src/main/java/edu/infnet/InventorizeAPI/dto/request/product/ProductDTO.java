@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para criação de um novo produto")
 public record ProductDTO(
         @Schema(
                 description = "O nome do produto,",
@@ -12,7 +13,7 @@ public record ProductDTO(
                         "Tinta Acrílica Dourada Pérola - 50ml",
                         "Argila Polimérica Biscuit Branca - 500g",
                         "Fita de Cetim 5cm - Vermelho Vinho",
-                }
+                },
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @NotBlank(message = "O nome do produto é obrigatório")
         @Length(max = 100, message = "O nome do produto deve ter no máximo 100 caracteres")

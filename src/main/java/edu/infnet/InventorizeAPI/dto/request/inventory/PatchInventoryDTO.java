@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para atualização parcial de um inventário existente, permitindo a modificação de campos " +
+        "específicos como nome, descrição e e-mail de notificação.")
 public record PatchInventoryDTO(
         @Schema(
                 name = "name",
@@ -30,10 +32,7 @@ public record PatchInventoryDTO(
 
         @Schema(
                 description = "O e-mail para notificações de estoque baixo do inventário",
-                examples = {
-                        "examploUser@email.com",
-                        "emailEmail@user.com"
-                }
+                example = "email@email.com"
         )
         @Email(message = "O e-mail para notificações deve ser válido")
         String notificationEmail

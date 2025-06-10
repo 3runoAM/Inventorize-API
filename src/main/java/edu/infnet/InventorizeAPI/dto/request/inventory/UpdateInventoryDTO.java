@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para atualização total de um inventário existente, permitindo a modificação de todos os " +
+        "campos como nome, descrição e e-mail de notificação.")
 public record UpdateInventoryDTO(
         @Schema(
                 description = "Nome do inventário",
@@ -18,7 +20,7 @@ public record UpdateInventoryDTO(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotBlank(message = "O nome do inventário é obrigatório nesse contexto")
-        @Length(max = 50)
+        @Length(max = 50, message = "O nome do inventário deve ter no máximo 50 caracteres")
         String name,
 
         @Schema(
@@ -31,7 +33,7 @@ public record UpdateInventoryDTO(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @NotNull(message = "A descrição do inventário é obrigatória neste contexto")
-        @Length(max = 200)
+        @Length(max = 200, message = "A descrição do inventário deve ter no máximo 200 caracteres")
         String description,
 
         @Schema(
@@ -42,8 +44,8 @@ public record UpdateInventoryDTO(
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotBlank(message = "O e-mail para notificações é obrigatório neste contexto")
-        @Email(message = "O e-mail para notificações deve ser válido")
+        @NotBlank(message = "O email para notificações é obrigatório neste contexto")
+        @Email(message = "O email para notificações deve ser válido")
         String notificationEmail
 ) {
     public static UpdateInventoryDTO from(Inventory inventory) {

@@ -12,8 +12,4 @@ public class InventorizeApiApplication {
 		SpringApplication.run(InventorizeApiApplication.class, args);
 	}
 
-//	@GetMapping("/")
-//	public String sayHelloAPI() {
-//		return "<h1>Olá! Já estamos rodando!</h1>";
-//	}
 }

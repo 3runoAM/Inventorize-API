@@ -132,6 +132,7 @@ public class InventoryService {
      */
     protected Inventory validateOwnershipById(UUID inventoryId) {
         var inventory = inventoryRepository.findById(inventoryId).orElseThrow(() -> new InventoryNotFoundException("Inventário com o [ ID: %s ] não encontrado".formatted(inventoryId)));
+
         AuthUser currentUser = authenticationService.getAuthenticatedUser();
 
         if(!inventory.getOwner().equals(currentUser)) throw new UnauthorizedRequestException("Usuário não tem autorização para gerenciar este inventário");

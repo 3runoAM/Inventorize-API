@@ -38,7 +38,7 @@ public class AuthenticationService {
      * @return Informações do usuário registrado.
      */
     public UserResponseDTO register(AuthenticationRequestDTO userData) {
-        if (this.existsByEmail(userData.email())) throw new UserAlreadyRegisteredException(String.format("[ EMAIL: %s ] já cadastrado", userData.email()));
+        if (this.existsByEmail(userData.email())) throw new UserAlreadyRegisteredException(String.format("Email: %s já cadastrado", userData.email()));
 
         String encryptedPassword = passwordEncoder.encode(userData.password());
 

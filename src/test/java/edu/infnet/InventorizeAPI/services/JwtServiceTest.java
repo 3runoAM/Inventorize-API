@@ -50,7 +50,6 @@ public class JwtServiceTest {
 
 
         var token = jwtService.generateToken(userDetails);
-        System.out.println("Generated Token: " + token);
 
         assertNotNull(token);
         assertEquals(user.getEmail(), jwtService.getUsername(token));
@@ -110,6 +109,8 @@ public class JwtServiceTest {
                 .expiration(new Date(System.currentTimeMillis() - 1000))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
                 .compact();
+
+        System.out.println("Expired Token: " + expiredToken);
 
         assertThrows(ExpiredJwtException.class,
                 () -> jwtService.isTokenValid(expiredToken, userDetails),

@@ -30,7 +30,7 @@ public class ItemController {
      * @return informações do item criado
      */
     @PostMapping
-    public ResponseEntity<ItemResponseDTO> createInventoryItem(@Valid @RequestBody ItemDTO itemRequest) {
+    public ResponseEntity<ItemResponseDTO> createItem(@Valid @RequestBody ItemDTO itemRequest) {
         ItemResponseDTO inventoryItemInfo = itemService.create(itemRequest);
 
         return ResponseEntity.ok(inventoryItemInfo);
@@ -43,7 +43,7 @@ public class ItemController {
      * @return informações do item encontrado
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> getInventoryItem(@PathVariable UUID id) {
+    public ResponseEntity<ItemResponseDTO> getItem(@PathVariable UUID id) {
         ItemResponseDTO inventoryItemInfo = itemService.getById(id);
 
         return ResponseEntity.ok(inventoryItemInfo);

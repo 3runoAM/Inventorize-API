@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para atualização total de um produto")
 public record UpdateProductDTO(
         @Schema(name = "name",
                 description = "O nome do produto,",

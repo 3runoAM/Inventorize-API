@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+@Schema(description = "DTO para autenticação de usuários no sistema")
 public record AuthenticationRequestDTO(
         @Schema(
                 name = "email",
@@ -22,7 +23,7 @@ public record AuthenticationRequestDTO(
                 example = "SenhaSegura456",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @NotBlank(message = "Senha não pode ser vazia")
-        @Size(min=8, max=16, message="Senha deve ter entre 8 e 16 caracteres")
+        @NotBlank(message = "A senha não pode ser vazia")
+        @Size(min=8, max=16, message="A senha deve ter entre 8 e 16 caracteres")
         String password
 ) {}

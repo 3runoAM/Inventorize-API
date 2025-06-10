@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
+@Schema(description = "DTO para resposta de autenticação de usuários no sistema")
 public record AuthenticationResponseDTO(
         @Schema(
                 description = "Token de autenticação do usuário",

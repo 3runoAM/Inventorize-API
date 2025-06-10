@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.UUID;
-
+@Schema(description = "DTO para criação de um novo item no inventário")
 public record ItemDTO(
         @Schema(
                 description = "O id do produto associado ao item",

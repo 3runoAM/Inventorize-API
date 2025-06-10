@@ -4,6 +4,7 @@ package edu.infnet.InventorizeAPI.dto.request.product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(description = "DTO para atualização parcial de um produto")
 public record PatchProductDTO(
         @Schema(
                 name = "name",

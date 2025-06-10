@@ -4,7 +4,7 @@ import edu.infnet.InventorizeAPI.entities.Item;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.PositiveOrZero;
 
-
+@Schema(description = "DTO para atualização parcial de um item no inventário")
 public record PatchItemDTO(
         @Schema(
                 description = "A quantidade atual do item no inventário",

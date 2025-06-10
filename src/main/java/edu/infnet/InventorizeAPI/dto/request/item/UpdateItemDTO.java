@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
+@Schema(description = "DTO para atualização total de um item no inventário")
 public record UpdateItemDTO(
         @Schema(
                 description = "A quantidade atual do item no inventário",
