@@ -26,4 +26,4 @@ public record AuthenticationRequestDTO(
         @NotBlank(message = "A senha não pode ser vazia")
         @Size(min=8, max=16, message="A senha deve ter entre 8 e 16 caracteres")
         String password
-) {}add .
+) {}
