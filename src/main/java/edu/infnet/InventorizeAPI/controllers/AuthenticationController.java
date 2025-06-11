@@ -38,23 +38,18 @@ public class AuthenticationController {
     )
     @ApiResponses({
             @ApiResponse(
-                    responseCode = "401",
-                    description = "Acesso negado",
+                    responseCode = "201",
+                    description = "Usuário logado com sucesso",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            value = """
-                                                    {
-                                                      "status": 401,
-                                                      "message": "Credenciais inválidas",
-                                                      "errorDetails": [
-                                                          "Usuário inexistente ou senha inválida"
-                                                      ],
-                                                      "timestamp": "YYYY-dd-mmTHH:MM:ss"
-                                                    }"""
-                                    )
-                            }
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "id": "158d6a25-4e6a-4357-8643-c4053e2f2a7b",
+                                              "email": "user_mail@gmail.com"
+                                            }
+                                            """
+                            )
                     )
             ),
             @ApiResponse(
@@ -80,18 +75,23 @@ public class AuthenticationController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "201",
-                    description = "Usuário logado com sucesso",
+                    responseCode = "401",
+                    description = "Acesso negado",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "id": "158d6a25-4e6a-4357-8643-c4053e2f2a7b",
-                                              "email": "user_mail@gmail.com"
-                                            }
-                                            """
-                            )
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                      "status": 401,
+                                                      "message": "Credenciais inválidas",
+                                                      "errorDetails": [
+                                                          "Usuário inexistente ou senha inválida"
+                                                      ],
+                                                      "timestamp": "YYYY-dd-mmTHH:MM:ss"
+                                                    }"""
+                                    )
+                            }
                     )
             )
     })

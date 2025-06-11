@@ -15,7 +15,7 @@ public record PatchProductDTO(
                         "Fita de Cetim 5cm - Vermelho Vinho"
                 }
         )
-        @Length(min = 2, max = 100)
+        @Length(min = 2, max = 100, message = "O nome precisa ter no mínimo 2 e no máximo 100 caracteres")
         String name,
 
         @Schema(
@@ -27,6 +27,6 @@ public record PatchProductDTO(
                         "Loja de Materiais Artísticos, Rua das Flores, 12345",
                 }
         )
-        @Length(min = 3, max = 100)
+        @Length(min = 3, max = 100, message = "O código de fornecedor precisa ter no mínimo 3 e no máximo 100 caracteres")
         String supplierCode
 ) {}

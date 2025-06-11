@@ -14,8 +14,8 @@ public record UpdateProductDTO(
                         "Fita de Cetim 5cm - Vermelho Vinho"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotBlank
-        @Length(max = 100)
+        @NotBlank(message = "O novo nome é obrigatório nesse contexto")
+        @Length(max = 100, message = "O novo nome deve ter 100 caracteres no máximo")
         String newName,
 
         @Schema(name = "supplierCode",
@@ -26,7 +26,7 @@ public record UpdateProductDTO(
                         "Loja de Materiais Artísticos, Rua das Flores, 12345"
                 },
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotBlank
-        @Length(max = 100)
+        @NotBlank(message = "O novo código de fornecedor é obrigatório nesse contexto")
+        @Length(max = 100, message = "O novo código de fornecedor deve ter 100 caracteres no máximo")
         String newSupplierCode
 ) {}

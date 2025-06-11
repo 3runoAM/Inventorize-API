@@ -25,7 +25,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "BearerAuth")
-@Tag(name = "Controller de Estoque", description = "Endpoints para gerenciar inventários de produtos")
+@Tag(name = "Controller de Estoque", description = "Endpoints para gerenciamento de estoques")
 @RequestMapping("/inventories")
 public class InventoryController {
     private final InventoryService inventoryService;
@@ -418,12 +418,8 @@ public class InventoryController {
                             examples = {
                                     @ExampleObject(
                                             value = """
-                                                    {
-                                                       "status": 500,
-                                                       "message": "Erro ao atualizar",
-                                                       "errorDetails": "O inventário não foi atualizado",
-                                                       "timestamp": "YYYY-dd-mmTHH:MM:ss"
-                                                     }"""
+                                                    {}
+                                                    """
                                     )
                             }
                     )
@@ -499,12 +495,8 @@ public class InventoryController {
                             examples = {
                                     @ExampleObject(
                                             value = """
-                                                    {
-                                                       "status": 500,
-                                                       "message": "Erro ao deletar",
-                                                       "errorDetails": "O inventário não foi ser deletado",
-                                                       "timestamp": "YYYY-dd-mmTHH:MM:ss"
-                                                     }"""
+                                                    {}
+                                                    """
                                     )
                             }
                     )

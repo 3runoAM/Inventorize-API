@@ -100,7 +100,7 @@ public class AuthenticationServiceTest {
             authenticationService.register(authenticationRequestDTO);
         }, "Deve lançar UserAlreadyRegisteredException quando o email já estiver cadastrado");
 
-        assertEquals(userRegisteredException.getMessage(), String.format("[ EMAIL: %s ] já cadastrado", authenticationRequestDTO.email()));
+        assertEquals(userRegisteredException.getMessage(), String.format("Email: %s já cadastrado", authenticationRequestDTO.email()));
     }
 
     @Test
