@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/inventorize_db
+    url: jdbc:postgresql://localhost:5432/inventorize
     driver-class-name: org.postgresql.Driver
-    username: seu_usuario
-    password: sua_senha
+    username: ${USERNAME_DB}
+    password: ${PASSWORD_DB}
   jpa:
     hibernate:
       ddl-auto: none
