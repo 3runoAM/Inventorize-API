@@ -12,9 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @Validated
@@ -99,7 +104,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody @Valid AuthenticationRequestDTO userData) {
         AuthenticationResponseDTO authenticatedUser = authenticationService.authenticate(userData);
 
-        return ResponseEntity.status(201).body(authenticatedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticatedUser);
     }
 
     /**
@@ -167,9 +172,12 @@ public class AuthenticationController {
             )
     })
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid AuthenticationRequestDTO userData) {
+    public ResponseEntity<EntityModel<UserResponseDTO>> register(@RequestBody @Valid AuthenticationRequestDTO userData) {
         UserResponseDTO savedUser = authenticationService.register(userData);
 
-        return ResponseEntity.status(201).body(savedUser);
+        EntityModel<UserResponseDTO> resource = EntityModel.of(savedUser,
+                linkTo(methodOn(AuthenticationController.class).login(userData)).withRel("login"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 }

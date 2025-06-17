@@ -16,11 +16,11 @@ public class OpenApiConfig {
                 new Info()
                         .title("Inventorize API")
                         .version("1.0.0")
-                        .description(
-                                "API REST para gerenciamento de inventário de artistas independentes e pequenas empresas. Permite o " +
-                                        "cadastro, consulta e monitoramento de produtos em estoque, incluindo a identificação de" +
-                                        " itens com nível crítico de estoque. Essa API é o trabalho final da disciplina de " +
-                                        "Projeto de Bloco: Desenvolvimento Back-End 2025.1")
+                        .description(" API REST para gerenciamento de inventário de pequenas empresas e artistas" +
+                                "independentes. Permite o cadastro, consulta e monitoramento de produtos em " +
+                                "estoque, incluindo a identificação e notificação de itens com nível crítico de" +
+                                " estoque. Essa API é o trabalho final da disciplina de Projeto de Bloco: " +
+                                "Desenvolvimento Back-End 2025.1")
         ).components(
                 new Components()
                         .addSecuritySchemes("BearerAuth", new SecurityScheme()

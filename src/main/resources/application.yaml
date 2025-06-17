@@ -14,6 +14,9 @@ spring:
           auth: true
           starttls:
             enable: true
+  hateoas:
+    relative-links:
+      enabled: true
 server:
   servlet:
     context-path: /inventorize/v1

@@ -14,12 +14,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Validated
 @RestController
@@ -132,10 +137,14 @@ public class ItemController {
             )
     })
     @PostMapping
-    public ResponseEntity<ItemResponseDTO> createItem(@Valid @RequestBody ItemDTO itemRequest) {
+    public ResponseEntity<EntityModel<ItemResponseDTO>> createItem(@Valid @RequestBody ItemDTO itemRequest) {
         ItemResponseDTO itemInfo = itemService.create(itemRequest);
 
-        return ResponseEntity.status(201).body(itemInfo);
+        EntityModel<ItemResponseDTO> resource = EntityModel.of(itemInfo,
+                linkTo(methodOn(ItemController.class).getItem(itemInfo.id())).withSelfRel(),
+                linkTo(methodOn(ItemController.class).deleteItem(itemInfo.id())).withRel("deleteItem"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
     /**
@@ -234,10 +243,13 @@ public class ItemController {
             ),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> getItem(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ItemResponseDTO>> getItem(@PathVariable UUID id) {
         ItemResponseDTO itemInfo = itemService.getById(id);
 
-        return ResponseEntity.ok(itemInfo);
+        EntityModel<ItemResponseDTO> resource = EntityModel.of(itemInfo,
+                linkTo(methodOn(ItemController.class).deleteItem(itemInfo.id())).withRel("deleteItem"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -472,10 +484,14 @@ public class ItemController {
             ),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> updateInventoryItem(@PathVariable UUID id, @Valid @RequestBody UpdateItemDTO itemRequest) {
+    public ResponseEntity<EntityModel<ItemResponseDTO>> updateItem(@PathVariable UUID id, @Valid @RequestBody UpdateItemDTO itemRequest) {
         ItemResponseDTO updatedItem = itemService.update(id, itemRequest);
 
-        return ResponseEntity.ok(updatedItem);
+        EntityModel<ItemResponseDTO> resource = EntityModel.of(updatedItem,
+                linkTo(methodOn(ItemController.class).getItem(updatedItem.id())).withSelfRel(),
+                linkTo(methodOn(ItemController.class).deleteItem(updatedItem.id())).withRel("deleteItem"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -576,10 +592,14 @@ public class ItemController {
             ),
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<ItemResponseDTO> patchInventoryItem(@PathVariable UUID id, @Valid @RequestBody PatchItemDTO itemRequest) {
+    public ResponseEntity<EntityModel<ItemResponseDTO>> patchItem(@PathVariable UUID id, @Valid @RequestBody PatchItemDTO itemRequest) {
         ItemResponseDTO patchedItem = itemService.patch(id, itemRequest);
 
-        return ResponseEntity.ok(patchedItem);
+        EntityModel<ItemResponseDTO> resource = EntityModel.of(patchedItem,
+                linkTo(methodOn(ItemController.class).getItem(patchedItem.id())).withSelfRel(),
+                linkTo(methodOn(ItemController.class).deleteItem(patchedItem.id())).withRel("deleteItem"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -665,10 +685,14 @@ public class ItemController {
             )
     })
     @PatchMapping("/{id}/adjust")
-    public ResponseEntity<ItemResponseDTO> adjustInventoryItemQuantity(@PathVariable UUID id, @RequestParam int adjustment) {
+    public ResponseEntity< EntityModel<ItemResponseDTO>> adjustItemQuantity(@PathVariable UUID id, @RequestParam int adjustment) {
         ItemResponseDTO updatedItem = itemService.adjustCurrentQuantity(id, adjustment);
 
-        return ResponseEntity.ok(updatedItem);
+        EntityModel<ItemResponseDTO> resource = EntityModel.of(updatedItem,
+                linkTo(methodOn(ItemController.class).getItem(updatedItem.id())).withSelfRel(),
+                linkTo(methodOn(ItemController.class).deleteItem(updatedItem.id())).withRel("deleteItem"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**

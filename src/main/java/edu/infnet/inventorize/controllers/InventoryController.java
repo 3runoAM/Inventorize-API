@@ -14,12 +14,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Validated
 @RestController
@@ -83,10 +88,14 @@ public class InventoryController {
             ),
     })
     @PostMapping
-    public ResponseEntity<InventoryResponseDTO> createInventory(@Valid @RequestBody InventoryDTO inventoryDTO) {
+    public ResponseEntity<EntityModel<InventoryResponseDTO>> createInventory(@Valid @RequestBody InventoryDTO inventoryDTO) {
         InventoryResponseDTO newInventory = inventoryService.createInventory(inventoryDTO);
 
-        return ResponseEntity.status(201).body(newInventory);
+        EntityModel<InventoryResponseDTO> resource = EntityModel.of(newInventory,
+                linkTo(methodOn(InventoryController.class).getInventory(newInventory.id())).withRel("self"),
+                linkTo(methodOn(InventoryController.class).delete(newInventory.id())).withRel("delete"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
     /**
@@ -113,7 +122,18 @@ public class InventoryController {
                                                       "name": "Tintas acrílicas",
                                                       "description": "Inventário de tintas acrílicas para pintura artística",
                                                       "notificationEmail": "examploUser@email.com",
-                                                      "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db"
+                                                      "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db",
+                                                      "_links": {
+                                                      "self": {
+                                                        "href": "http://localhost:8080/inventorize/v1/inventories/1dd1e937-a9cb-451c-98d5-3430737c80d5"
+                                                      },
+                                                      "delete": {
+                                                        "href": "http://localhost:8080/inventorize/v1/inventories/1dd1e937-a9cb-451c-98d5-3430737c80d5"
+                                                      },
+                                                      "all-inventories": {
+                                                        "href": "http://localhost:8080/inventorize/v1/inventories"
+                                                      }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -151,10 +171,13 @@ public class InventoryController {
             ),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<InventoryResponseDTO> getInventory(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<InventoryResponseDTO>> getInventory(@PathVariable UUID id) {
         InventoryResponseDTO inventory = inventoryService.getById(id);
 
-        return ResponseEntity.ok(inventory);
+        EntityModel<InventoryResponseDTO> resource = EntityModel.of(inventory,
+                linkTo(methodOn(InventoryController.class).delete(id)).withRel("delete"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -321,10 +344,14 @@ public class InventoryController {
             ),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<InventoryResponseDTO> putInventory(@PathVariable UUID id, @Valid @RequestBody UpdateInventoryDTO inventoryDTO) {
+    public ResponseEntity<EntityModel<InventoryResponseDTO>> putInventory(@PathVariable UUID id, @Valid @RequestBody UpdateInventoryDTO inventoryDTO) {
         InventoryResponseDTO updatedInventory = inventoryService.update(id, inventoryDTO);
 
-        return ResponseEntity.ok(updatedInventory);
+        EntityModel<InventoryResponseDTO> resource = EntityModel.of(updatedInventory,
+                linkTo(methodOn(InventoryController.class).getInventory(updatedInventory.id())).withSelfRel(),
+                linkTo(methodOn(InventoryController.class).delete(updatedInventory.id())).withRel("delete"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -426,10 +453,14 @@ public class InventoryController {
             ),
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<InventoryResponseDTO> patchInventory(@PathVariable UUID id, @Valid @RequestBody PatchInventoryDTO inventoryRequestDTO) {
+    public ResponseEntity<EntityModel<InventoryResponseDTO> > patchInventory(@PathVariable UUID id, @Valid @RequestBody PatchInventoryDTO inventoryRequestDTO) {
         InventoryResponseDTO updatedInventory = inventoryService.patch(id, inventoryRequestDTO);
 
-        return ResponseEntity.ok(updatedInventory);
+        EntityModel<InventoryResponseDTO> resource = EntityModel.of(updatedInventory,
+                linkTo(methodOn(InventoryController.class).getInventory(updatedInventory.id())).withRel("self"),
+                linkTo(methodOn(InventoryController.class).delete(updatedInventory.id())).withRel("delete"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**

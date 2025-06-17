@@ -14,12 +14,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Validated
 @RestController
@@ -135,10 +140,14 @@ public class ProductController {
             )
     })
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductDTO productData) {
+    public ResponseEntity<EntityModel<ProductResponseDTO> > createProduct(@Valid @RequestBody ProductDTO productData) {
         ProductResponseDTO savedProductInfo = productService.createProduct(productData);
 
-        return ResponseEntity.status(201).body(savedProductInfo);
+        EntityModel<ProductResponseDTO> resource = EntityModel.of(savedProductInfo,
+                linkTo(methodOn(ProductController.class).getById(savedProductInfo.productId())).withSelfRel(),
+                linkTo(methodOn(ProductController.class).deleteById(savedProductInfo.productId())).withRel("deleteProduct"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
     /**
@@ -236,10 +245,13 @@ public class ProductController {
             ),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ProductResponseDTO>> getById(@PathVariable UUID id) {
         ProductResponseDTO productInfo = productService.getById(id);
 
-        return ResponseEntity.ok(productInfo);
+        EntityModel<ProductResponseDTO> resource = EntityModel.of(productInfo,
+                linkTo(methodOn(ProductController.class).deleteById(productInfo.productId())).withRel("deleteProduct"));
+
+        return ResponseEntity.ok(resource);
     }
 
 
@@ -397,10 +409,14 @@ public class ProductController {
             ),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID id, @Valid @RequestBody UpdateProductDTO productData) {
+    public ResponseEntity<EntityModel<ProductResponseDTO>> updateProduct(@PathVariable UUID id, @Valid @RequestBody UpdateProductDTO productData) {
         var productResponseDTO = productService.updateProduct(id, productData);
 
-        return ResponseEntity.ok(productResponseDTO);
+        EntityModel<ProductResponseDTO> resource = EntityModel.of(productResponseDTO,
+                linkTo(methodOn(ProductController.class).getById(productResponseDTO.productId())).withSelfRel(),
+                linkTo(methodOn(ProductController.class).deleteById(productResponseDTO.productId())).withRel("deleteProduct"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
@@ -500,10 +516,14 @@ public class ProductController {
             ),
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> patchProduct(@PathVariable UUID id, @Valid @RequestBody PatchProductDTO productData) {
+    public ResponseEntity<EntityModel<ProductResponseDTO>> patchProduct(@PathVariable UUID id, @Valid @RequestBody PatchProductDTO productData) {
         var productResponseDTO = productService.patchProduct(id, productData);
 
-        return ResponseEntity.ok(productResponseDTO);
+        EntityModel<ProductResponseDTO> resource = EntityModel.of(productResponseDTO,
+                linkTo(methodOn(ProductController.class).getById(productResponseDTO.productId())).withSelfRel(),
+                linkTo(methodOn(ProductController.class).deleteById(productResponseDTO.productId())).withRel("deleteProduct"));
+
+        return ResponseEntity.ok(resource);
     }
 
     /**
