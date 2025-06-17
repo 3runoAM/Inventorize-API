@@ -57,7 +57,15 @@ public class ProductController {
                                                       "productId": "a0d7e008-e953-4b97-95a9-f73ece8d2f0d",
                                                       "ownerId": "8dbce360-0e12-4eb3-b9b6-eaaefdb34192",
                                                       "name": "Tinta Acrílica Dourada Pérola - 50ml",
-                                                      "supplierCode": "CODIGO-001"
+                                                      "supplierCode": "CODIGO-001",
+                                                      "_links" : {
+                                                          "self": {
+                                                              "href": "http://localhost:8080/products/a0d7e008-e953-4b97-95a9-f73ece8d2f0d"
+                                                          },
+                                                          "deleteProduct": {
+                                                              "href": "http://localhost:8080/products/a0d7e008-e953-4b97-95a9-f73ece8d2f0d"
+                                                          }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -173,7 +181,12 @@ public class ProductController {
                                                       "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                       "ownerId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                       "name": "Tinta Acrílica Dourada Pérola - 50ml",
-                                                      "supplierCode": "CODIGO-001"
+                                                      "supplierCode": "CODIGO-001",
+                                                      "_links" : {
+                                                          "deleteProduct": {
+                                                              "href": "http://localhost:8080/products/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                          }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -335,7 +348,15 @@ public class ProductController {
                                                         "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                         "ownerId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                         "name": "Tinta Acrílica Dourada Pérola - 50ml",
-                                                        "supplierCode": "CODIGO-001"
+                                                        "supplierCode": "CODIGO-001",
+                                                          "_links" : {
+                                                          "self": {
+                                                              "href": "http://localhost:8080/products/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                          },
+                                                          "deleteProduct": {
+                                                              "href": "http://localhost:8080/products/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                          }
+                                                        }
                                                       },
                                                     """
                                     )
@@ -443,7 +464,15 @@ public class ProductController {
                                                       "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                       "ownerId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                       "name": "Tinta Acrílica - NOVO",
-                                                      "supplierCode": "N0V0C0D1"
+                                                      "supplierCode": "N0V0C0D1",
+                                                      "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/products/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        },
+                                                        "deleteProduct": {
+                                                          "href": "http://localhost:8080/products/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        }
+                                                      }
                                                     }
                                                     """
                                     )

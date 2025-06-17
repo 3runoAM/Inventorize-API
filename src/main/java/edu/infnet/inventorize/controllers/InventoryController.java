@@ -59,7 +59,15 @@ public class InventoryController {
                                                       "name": "Tintas acrílicas",
                                                       "description": "Inventário de tintas acrílicas para pintura artística",
                                                       "notificationEmail": "aviso@email.com",
-                                                      "ownerId": "bcbbbe5d-434e-4bc7-81ec-962f6c1d6b58"
+                                                      "ownerId": "bcbbbe5d-434e-4bc7-81ec-962f6c1d6b58",
+                                                      "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/inventorize/v1/inventories/d82e6d8c-c2d6-4903-bb93-79f7a5c50170"
+                                                        },
+                                                        "delete": {
+                                                          "href": "http://localhost:8080/inventorize/v1/inventories/d82e6d8c-c2d6-4903-bb93-79f7a5c50170"
+                                                        }
+                                                      }
                                                     }"""
                                     )
                             }
@@ -124,15 +132,9 @@ public class InventoryController {
                                                       "notificationEmail": "examploUser@email.com",
                                                       "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db",
                                                       "_links": {
-                                                      "self": {
-                                                        "href": "http://localhost:8080/inventorize/v1/inventories/1dd1e937-a9cb-451c-98d5-3430737c80d5"
-                                                      },
-                                                      "delete": {
-                                                        "href": "http://localhost:8080/inventorize/v1/inventories/1dd1e937-a9cb-451c-98d5-3430737c80d5"
-                                                      },
-                                                      "all-inventories": {
-                                                        "href": "http://localhost:8080/inventorize/v1/inventories"
-                                                      }
+                                                        "delete": {
+                                                          "href": "http://localhost:8080/inventorize/v1/inventories/1dd1e937-a9cb-451c-98d5-3430737c80d5"
+                                                        },
                                                       }
                                                     }
                                                     """
@@ -263,7 +265,15 @@ public class InventoryController {
                                                         "name": "Tintas acrílicas - Atualizado",
                                                         "description": "Nova descrição do inventário",
                                                         "notificationEmail": "novo@email.com",
-                                                        "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db"
+                                                        "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db",
+                                                        "_links" : {
+                                                            "self": {
+                                                                "href": "http://localhost:8080/inventorize/v1/inventories/a1d2fb3a-dc03-4e2e-a09d-2a94f5670ed9"
+                                                            },
+                                                            "delete": {
+                                                                "href": "http://localhost:8080/inventorize/v1/inventories/a1d2fb3a-dc03-4e2e-a09d-2a94f5670ed9"
+                                                            }
+                                                        }
                                                     }
                                                     """
                                     )
@@ -379,7 +389,15 @@ public class InventoryController {
                                                       "name": "Novo nome",
                                                       "description": "Descrição atualizada",
                                                       "notificationEmail": "novo@email.com",
-                                                      "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db"
+                                                      "ownerId": "bf42f203-aacb-43dd-a033-a05fd59267db",
+                                                      "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/inventorize/v1/inventories/a1d2fb3a-dc03-4e2e-a09d-2a94f5670ed9"
+                                                        },
+                                                        "delete": {
+                                                          "href": "http://localhost:8080/inventorize/v1/inventories/a1d2fb3a-dc03-4e2e-a09d-2a94f5670ed9"
+                                                        }
+                                                      }
                                                     }
                                                     """
                                     )

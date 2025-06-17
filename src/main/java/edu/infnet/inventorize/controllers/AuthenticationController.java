@@ -164,7 +164,12 @@ public class AuthenticationController {
                                     value = """
                                             {
                                               "id": "7c3479e0-4ec5-4126-b54a-bef4ccdd32fb",
-                                              "email": "user_mail@gmail.com"
+                                              "email": "user_mail@gmail.com",
+                                              "_links" : {
+                                                "login": {
+                                                  "href": "http://localhost:8080/auth/login"
+                                                }
+                                              }
                                             }
                                             """
                             )

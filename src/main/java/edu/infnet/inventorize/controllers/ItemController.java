@@ -58,7 +58,15 @@ public class ItemController {
                                                       "productId": "a0d7e008-e953-4b97-95a9-f73ece8d2f0d",
                                                       "inventoryId": "8dbce360-0e12-4eb3-b9b6-eaaefdb34192",
                                                       "currentQuantity": "10",
-                                                      "minimumStockLevel": "5"
+                                                      "minimumStockLevel": "5",
+                                                      "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a0d7e008-e953-4b97-95a9-f73ece8d2f0d"
+                                                        },
+                                                        "delete": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a0d7e008-e953-4b97-95a9-f73ece8d2f0d"
+                                                        }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -171,7 +179,15 @@ public class ItemController {
                                                       "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                       "inventoryId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                       "currentQuantity": "50",
-                                                      "minimumStockLevel": "10"
+                                                      "minimumStockLevel": "10",
+                                                      "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        },
+                                                        "deleteItem": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -410,7 +426,15 @@ public class ItemController {
                                                         "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                         "inventoryId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                         "currentQuantity": "25",
-                                                        "minimumStockLevel": "2"
+                                                        "minimumStockLevel": "2",
+                                                        "_links" : {
+                                                          "self": {
+                                                            "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                          },
+                                                          "deleteItem": {
+                                                            "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                          }
+                                                        }
                                                       }
                                                     """
                                     )
@@ -519,7 +543,15 @@ public class ItemController {
                                                     "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
                                                     "inventoryId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
                                                     "currentQuantity": "25",
-                                                    "minimumStockLevel": "10"
+                                                    "minimumStockLevel": "10",
+                                                    "_links" : {
+                                                        "self": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        },
+                                                        "deleteItem": {
+                                                          "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        }
+                                                      }
                                                     }
                                                     """
                                     )
@@ -614,6 +646,34 @@ public class ItemController {
             description = "Ajusta a quantidade atual do item em estoque."
     )
     @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Quantidade ajustada com sucesso",
+                    content =  @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                    "id": "a015aebc-5388-4aac-9037-21aff2c65390",
+                                                    "productId": "a015aebc-5388-4aac-9037-21aff2c65390",
+                                                    "inventoryId": "66e1e3c1-2548-4a68-9a02-0ac0bf62ae52",
+                                                    "currentQuantity": "50",
+                                                    "minimumStockLevel": "10",
+                                                    "_links" : {
+                                                        "self": {
+                                                        "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        },
+                                                        "deleteItem": {
+                                                        "href": "http://localhost:8080/inventorize/v1/items/a015aebc-5388-4aac-9037-21aff2c65390"
+                                                        }
+                                                      }
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Acesso negado",
