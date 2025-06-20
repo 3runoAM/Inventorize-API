@@ -2,7 +2,7 @@ spring:
   application:
     name: InventorizeAPI
   profiles:
-    active: "prod"
+    active: "dev"
   mail:
     host: smtp.gmail.com
     username: ${EMAIL_USERNAME}
@@ -14,9 +14,6 @@ spring:
           auth: true
           starttls:
             enable: true
-  hateoas:
-    relative-links:
-      enabled: true
 server:
   servlet:
     context-path: /inventorize/v1
